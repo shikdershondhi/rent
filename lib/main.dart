@@ -1,11 +1,7 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pdf/pdf.dart';
-import 'package:pdf/widgets.dart' as pw;
-import 'package:path_provider/path_provider.dart';
-import 'package:open_file/open_file.dart';
-void main() {
+
+void main() async {
   runApp(MyApp());
 }
 
@@ -83,14 +79,35 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
+
   void _previewData() {
     if (_formKey.currentState!.validate()) {
       _calculateTotalBill();
       showDialog(
         context: context,
         builder: (context) {
+          // Function to format the preview data as a string
+          String _formatPreviewData() {
+            return '''
+Name: ${_nameController.text}
+Address: ${_addressController.text}
+Phone: ${_phoneController.text}
+Month: $_selectedMonth
+Rent: ${_rentController.text}
+Advance Rent: ${_advanceRentController.text}
+Due Rent: ${_dueRentController.text}
+GAS: ${_gasController.text}
+Electricity Bill: ${_electricityController.text}
+Service Charge: ${_serviceChargeController.text}
+Utility Bill: ${_utilityBillController.text}
+${_additionalControllers.asMap().entries.map((entry) => '${_additionalLabels[entry.key]}: ${entry.value.text}').join('\n')}
+Notice: ${_noticeController.text}
+Total Bill: $_totalBill
+''';
+          }
+
           return AlertDialog(
-            title: Text('Preview Data'),
+            title: Text('House rent info'),
             content: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,6 +138,17 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             actions: [
+              // Copy button
+              TextButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: _formatPreviewData())); // Copy data to clipboard
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data copied to clipboard!')),
+                  );
+                },
+                child: Text('Copy'),
+              ),
+              // Close button
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text('Close'),
@@ -132,55 +160,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _downloadPdf() async {
-    if (_formKey.currentState!.validate()) {
-      _calculateTotalBill();
 
-      final pdf = pw.Document();
 
-      pdf.addPage(
-        pw.Page(
-          build: (pw.Context context) {
-            return pw.Column(
-              crossAxisAlignment: pw.CrossAxisAlignment.start,
-              children: [
-                pw.Text('House Rent Info', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
-                pw.SizedBox(height: 16),
-                pw.Text('Name: ${_nameController.text}'),
-                pw.Text('Address: ${_addressController.text}'),
-                pw.Text('Phone: ${_phoneController.text}'),
-                pw.Text('Month: $_selectedMonth'),
-                pw.Text('Rent: ${_rentController.text}'),
-                pw.Text('Advance Rent: ${_advanceRentController.text}'),
-                pw.Text('Due Rent: ${_dueRentController.text}'),
-                pw.Text('GAS: ${_gasController.text}'),
-                pw.Text('Electricity Bill: ${_electricityController.text}'),
-                pw.Text('Service Charge: ${_serviceChargeController.text}'),
-                pw.Text('Utility Bill: ${_utilityBillController.text}'),
-                for (int i = 0; i < _additionalControllers.length; i++)
-                  pw.Text('${_additionalLabels[i]}: ${_additionalControllers[i].text}'),
-                pw.Text('Notice: ${_noticeController.text}'),
-                pw.SizedBox(height: 16),
-                pw.Text(
-                  'Total Bill: $_totalBill',
-                  style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
-                ),
-              ],
-            );
-          },
-        ),
-      );
 
-      final output = await getTemporaryDirectory();
-      final file = File("${output.path}/rent/house_rent_info.pdf");
-      await file.writeAsBytes(await pdf.save());
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('PDF saved to ${file.path}')),
-      );
-      OpenFile.open(file.path);
-    }
-  }
 
   void _clearData() {
     _nameController.clear();
@@ -541,10 +523,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: _previewData,
                       child: Text('Preview'),
                     ),
-                    ElevatedButton(
-                      onPressed: _downloadPdf,
-                      child: Text('Download PDF'),
-                    ),
+                    // ElevatedButton(
+                    //   onPressed: _downloadPdf,
+                    //   child: Text('Download PDF'),
+                    // ),
                     ElevatedButton(
                       onPressed: _clearData,
                       child: Text('Clear'),
