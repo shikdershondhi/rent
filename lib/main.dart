@@ -1,6 +1,10 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:path_provider/path_provider.dart';
+import 'package:open_file/open_file.dart';
 void main() {
   runApp(MyApp());
 }
@@ -79,13 +83,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _printData() {
-    if (_formKey.currentState!.validate()) {
-      _calculateTotalBill();
-      print('Data printed to console for now.');
-    }
-  }
-
   void _previewData() {
     if (_formKey.currentState!.validate()) {
       _calculateTotalBill();
@@ -93,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: Text('House rent Info'),
+            title: Text('Preview Data'),
             content: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -132,6 +129,56 @@ class _HomeScreenState extends State<HomeScreen> {
           );
         },
       );
+    }
+  }
+
+  void _downloadPdf() async {
+    if (_formKey.currentState!.validate()) {
+      _calculateTotalBill();
+
+      final pdf = pw.Document();
+
+      pdf.addPage(
+        pw.Page(
+          build: (pw.Context context) {
+            return pw.Column(
+              crossAxisAlignment: pw.CrossAxisAlignment.start,
+              children: [
+                pw.Text('House Rent Info', style: pw.TextStyle(fontSize: 24, fontWeight: pw.FontWeight.bold)),
+                pw.SizedBox(height: 16),
+                pw.Text('Name: ${_nameController.text}'),
+                pw.Text('Address: ${_addressController.text}'),
+                pw.Text('Phone: ${_phoneController.text}'),
+                pw.Text('Month: $_selectedMonth'),
+                pw.Text('Rent: ${_rentController.text}'),
+                pw.Text('Advance Rent: ${_advanceRentController.text}'),
+                pw.Text('Due Rent: ${_dueRentController.text}'),
+                pw.Text('GAS: ${_gasController.text}'),
+                pw.Text('Electricity Bill: ${_electricityController.text}'),
+                pw.Text('Service Charge: ${_serviceChargeController.text}'),
+                pw.Text('Utility Bill: ${_utilityBillController.text}'),
+                for (int i = 0; i < _additionalControllers.length; i++)
+                  pw.Text('${_additionalLabels[i]}: ${_additionalControllers[i].text}'),
+                pw.Text('Notice: ${_noticeController.text}'),
+                pw.SizedBox(height: 16),
+                pw.Text(
+                  'Total Bill: $_totalBill',
+                  style: pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold),
+                ),
+              ],
+            );
+          },
+        ),
+      );
+
+      final output = await getTemporaryDirectory();
+      final file = File("${output.path}/rent/house_rent_info.pdf");
+      await file.writeAsBytes(await pdf.save());
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('PDF saved to ${file.path}')),
+      );
+      OpenFile.open(file.path);
     }
   }
 
@@ -486,13 +533,17 @@ class _HomeScreenState extends State<HomeScreen> {
                       onPressed: _calculateTotalBill,
                       child: Text('Calculate Bill'),
                     ),
-                    ElevatedButton(
-                      onPressed: _printData,
-                      child: Text('Print'),
-                    ),
+                    // ElevatedButton(
+                    //   onPressed: _printData,
+                    //   child: Text('Print'),
+                    // ),
                     ElevatedButton(
                       onPressed: _previewData,
                       child: Text('Preview'),
+                    ),
+                    ElevatedButton(
+                      onPressed: _downloadPdf,
+                      child: Text('Download PDF'),
                     ),
                     ElevatedButton(
                       onPressed: _clearData,

@@ -30,6 +30,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  pdf: ^3.8.1
+  path_provider: ^2.0.11
+  open_file: ^3.2.1
 #  fluttertoast: ^8.2.2
 
 #  flutter_pos_printer_platform: ^1.0.0
