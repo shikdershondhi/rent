@@ -30,22 +30,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-#  fluttertoast: ^8.2.2
-
-#  flutter_pos_printer_platform: ^1.0.0
-#  flutter_star_prnt: ^2.4.1
-#  flutter_esc_pos_utils: ^1.0.0
-#  flutter_pos_printer_platform_image_3:
-#    git:
-#      url: https://github.com/diantahoc/flutter_pos_printer_platform.git
-#      ref: main
-
-
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-#  cupertino_icons: ^1.0.6
-
+  flutter_share: ^2.0.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

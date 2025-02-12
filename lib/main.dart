@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
+import 'package:flutter_share/flutter_share.dart';
 void main() async {
   runApp(MyApp());
 }
@@ -107,7 +107,7 @@ Total Bill: $_totalBill
           }
 
           return AlertDialog(
-            title: Text('House rent info'),
+            title: Text('Preview Data'),
             content: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -148,6 +148,22 @@ Total Bill: $_totalBill
                 },
                 child: Text('Copy'),
               ),
+              // Share button
+              TextButton(
+                onPressed: () async {
+                  try {
+                    await FlutterShare.share(
+                      title: 'Preview Data', // Title of the shared content
+                      text: _formatPreviewData(), // Text to share
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to share: $e')),
+                    );
+                  }
+                },
+                child: Text('Share'),
+              ),
               // Close button
               TextButton(
                 onPressed: () => Navigator.pop(context),
@@ -159,10 +175,6 @@ Total Bill: $_totalBill
       );
     }
   }
-
-
-
-
 
   void _clearData() {
     _nameController.clear();
