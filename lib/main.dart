@@ -107,7 +107,7 @@ Total Bill: $_totalBill
           }
 
           return AlertDialog(
-            title: Text('Preview Data'),
+            title: Text('House rent info'),
             content: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -527,18 +527,10 @@ Total Bill: $_totalBill
                       onPressed: _calculateTotalBill,
                       child: Text('Calculate Bill'),
                     ),
-                    // ElevatedButton(
-                    //   onPressed: _printData,
-                    //   child: Text('Print'),
-                    // ),
                     ElevatedButton(
                       onPressed: _previewData,
                       child: Text('Preview'),
                     ),
-                    // ElevatedButton(
-                    //   onPressed: _downloadPdf,
-                    //   child: Text('Download PDF'),
-                    // ),
                     ElevatedButton(
                       onPressed: _clearData,
                       child: Text('Clear'),
