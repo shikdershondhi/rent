@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
-void main() {
+import 'package:flutter_share/flutter_share.dart';
+void main() async {
   runApp(MyApp());
 }
 
@@ -79,12 +79,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  void _printData() {
-    if (_formKey.currentState!.validate()) {
-      _calculateTotalBill();
-      print('Data printed to console for now.');
-    }
-  }
 
   void _previewData() {
     if (_formKey.currentState!.validate()) {
@@ -92,8 +86,28 @@ class _HomeScreenState extends State<HomeScreen> {
       showDialog(
         context: context,
         builder: (context) {
+          // Function to format the preview data as a string
+          String _formatPreviewData() {
+            return '''
+Name: ${_nameController.text}
+Address: ${_addressController.text}
+Phone: ${_phoneController.text}
+Month: $_selectedMonth
+Rent: ${_rentController.text}
+Advance Rent: ${_advanceRentController.text}
+Due Rent: ${_dueRentController.text}
+GAS: ${_gasController.text}
+Electricity Bill: ${_electricityController.text}
+Service Charge: ${_serviceChargeController.text}
+Utility Bill: ${_utilityBillController.text}
+${_additionalControllers.asMap().entries.map((entry) => '${_additionalLabels[entry.key]}: ${entry.value.text}').join('\n')}
+Notice: ${_noticeController.text}
+Total Bill: $_totalBill
+''';
+          }
+
           return AlertDialog(
-            title: Text('House rent Info'),
+            title: Text('House rent info'),
             content: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -124,6 +138,33 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             actions: [
+              // Copy button
+              TextButton(
+                onPressed: () {
+                  Clipboard.setData(ClipboardData(text: _formatPreviewData())); // Copy data to clipboard
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Data copied to clipboard!')),
+                  );
+                },
+                child: Text('Copy'),
+              ),
+              // Share button
+              TextButton(
+                onPressed: () async {
+                  try {
+                    await FlutterShare.share(
+                      title: 'Preview Data', // Title of the shared content
+                      text: _formatPreviewData(), // Text to share
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Failed to share: $e')),
+                    );
+                  }
+                },
+                child: Text('Share'),
+              ),
+              // Close button
               TextButton(
                 onPressed: () => Navigator.pop(context),
                 child: Text('Close'),
@@ -485,10 +526,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     ElevatedButton(
                       onPressed: _calculateTotalBill,
                       child: Text('Calculate Bill'),
-                    ),
-                    ElevatedButton(
-                      onPressed: _printData,
-                      child: Text('Print'),
                     ),
                     ElevatedButton(
                       onPressed: _previewData,
