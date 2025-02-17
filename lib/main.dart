@@ -551,11 +551,14 @@ Total Bill: $_totalBill
                   },
                 ),
                 SizedBox(height: 24),
+                Divider(),
+                SizedBox(height: 8),
                 Text(
                   'Total Bill: $_totalBill',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                    fontSize: 20,
+                    color: Colors.green,
                   ),
                 ),
                 SizedBox(height: 24),
@@ -574,8 +577,12 @@ Total Bill: $_totalBill
                     ),
                     ElevatedButton(
                       onPressed: _clearData,
-                      child: Text('Clear'),
+                      child: Text('Clear',
+                       style: TextStyle(
+                         color: Colors.red
+                      ),
                     ),
+                         ),
                   ],
                 ),
               ],
