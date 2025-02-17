@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_share/flutter_share.dart';
+
 void main() async {
   runApp(MyApp());
 }
@@ -42,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
   String _selectedYear = DateTime.now().year.toString(); // Default value
   double _totalBill = 0.0;
   List<TextEditingController> _additionalControllers = [];
-  List<String> _additionalLabels = [];
+  List<TextEditingController> _additionalLabelControllers = [];
 
   final List<String> _months = [
     'January',
@@ -69,6 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _selectedMonth = _months[now.month - 1]; // Months are 1-indexed in DateTime
     _selectedYear = now.year.toString();
   }
+
   void _calculateTotalBill() {
     if (_formKey.currentState!.validate()) {
       double total = double.parse(_rentController.text) +
@@ -112,7 +114,7 @@ GAS: ${_gasController.text}
 Electricity Bill: ${_electricityController.text}
 Service Charge: ${_serviceChargeController.text}
 Utility Bill: ${_utilityBillController.text}
-${_additionalControllers.asMap().entries.map((entry) => '${_additionalLabels[entry.key]}: ${entry.value.text}').join('\n')}
+${_additionalControllers.asMap().entries.map((entry) => '${_additionalLabelControllers[entry.key].text}: ${entry.value.text}').join('\n')}
 Notice: ${_noticeController.text}
 Total Bill: $_totalBill
 ''';
@@ -167,7 +169,7 @@ Total Bill: $_totalBill
                       Text('Service Charge: ${_serviceChargeController.text}'),
                       Text('Utility Bill: ${_utilityBillController.text}'),
                       for (int i = 0; i < _additionalControllers.length; i++)
-                        Text('${_additionalLabels[i]}: ${_additionalControllers[i].text}'),
+                        Text('${_additionalLabelControllers[i].text}: ${_additionalControllers[i].text}'),
                       SizedBox(height: 16),
                       Text(
                         'Notice: ${_noticeController.text}',
@@ -245,6 +247,9 @@ Total Bill: $_totalBill
     for (var controller in _additionalControllers) {
       controller.clear();
     }
+    for (var controller in _additionalLabelControllers) {
+      controller.clear();
+    }
     setState(() {
       _totalBill = 0.0;
       _selectedMonth = 'January';
@@ -255,14 +260,14 @@ Total Bill: $_totalBill
   void _addAdditionalField() {
     setState(() {
       _additionalControllers.add(TextEditingController());
-      _additionalLabels.add('Additional Field ${_additionalControllers.length}');
+      _additionalLabelControllers.add(TextEditingController());
     });
   }
 
   void _removeAdditionalField(int index) {
     setState(() {
       _additionalControllers.removeAt(index);
-      _additionalLabels.removeAt(index);
+      _additionalLabelControllers.removeAt(index);
     });
   }
 
@@ -641,9 +646,25 @@ Total Bill: $_totalBill
                         children: [
                           Expanded(
                             child: TextFormField(
+                              controller: _additionalLabelControllers[i],
+                              decoration: InputDecoration(
+                                labelText: 'Field Label',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a label';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: TextFormField(
                               controller: _additionalControllers[i],
                               decoration: InputDecoration(
-                                labelText: _additionalLabels[i],
+                                labelText: 'Value',
                                 border: OutlineInputBorder(),
                               ),
                               keyboardType: TextInputType.number,
