@@ -107,34 +107,75 @@ Total Bill: $_totalBill
           }
 
           return AlertDialog(
-            title: Text('House rent info'),
+            title: Text(
+              'Invoice',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
             content: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Name: ${_nameController.text}'),
-                  Text('Address: ${_addressController.text}'),
-                  Text('Phone: ${_phoneController.text}'),
-                  Text('Month: $_selectedMonth'),
-                  Text('Rent: ${_rentController.text}'),
-                  Text('Advance Rent: ${_advanceRentController.text}'),
-                  Text('Due Rent: ${_dueRentController.text}'),
-                  Text('GAS: ${_gasController.text}'),
-                  Text('Electricity Bill: ${_electricityController.text}'),
-                  Text('Service Charge: ${_serviceChargeController.text}'),
-                  Text('Utility Bill: ${_utilityBillController.text}'),
-                  for (int i = 0; i < _additionalControllers.length; i++)
-                    Text('${_additionalLabels[i]}: ${_additionalControllers[i].text}'),
-                  Text('Notice: ${_noticeController.text}'),
-                  SizedBox(height: 16),
-                  Text(
-                    'Total Bill: $_totalBill',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
+              child: Card(
+                elevation: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Customer Details',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text('Name: ${_nameController.text}'),
+                      Text('Address: ${_addressController.text}'),
+                      Text('Phone: ${_phoneController.text}'),
+                      SizedBox(height: 16),
+                      Text(
+                        'Invoice Details',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text('Month: $_selectedMonth'),
+                      Text('Rent: ${_rentController.text}'),
+                      Text('Advance Rent: ${_advanceRentController.text}'),
+                      Text('Due Rent: ${_dueRentController.text}'),
+                      Text('GAS: ${_gasController.text}'),
+                      Text('Electricity Bill: ${_electricityController.text}'),
+                      Text('Service Charge: ${_serviceChargeController.text}'),
+                      Text('Utility Bill: ${_utilityBillController.text}'),
+                      for (int i = 0; i < _additionalControllers.length; i++)
+                        Text('${_additionalLabels[i]}: ${_additionalControllers[i].text}'),
+                      SizedBox(height: 16),
+                      Text(
+                        'Notice: ${_noticeController.text}',
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Divider(),
+                      SizedBox(height: 8),
+                      Text(
+                        'Total Bill: $_totalBill',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
             actions: [
@@ -153,7 +194,7 @@ Total Bill: $_totalBill
                 onPressed: () async {
                   try {
                     await FlutterShare.share(
-                      title: 'Preview Data', // Title of the shared content
+                      title: 'Invoice', // Title of the shared content
                       text: _formatPreviewData(), // Text to share
                     );
                   } catch (e) {
