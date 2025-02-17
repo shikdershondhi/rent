@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_share/flutter_share.dart';
+
 void main() async {
   runApp(MyApp());
 }
@@ -37,10 +38,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _utilityBillController = TextEditingController();
   final TextEditingController _noticeController = TextEditingController();
 
-  String _selectedMonth = 'January';
+  // Initialize with the current month and year
+  String _selectedMonth = DateTime.now().month.toString(); // Default value
+  String _selectedYear = DateTime.now().year.toString(); // Default value
   double _totalBill = 0.0;
   List<TextEditingController> _additionalControllers = [];
-  List<String> _additionalLabels = [];
+  List<TextEditingController> _additionalLabelControllers = [];
 
   final List<String> _months = [
     'January',
@@ -56,6 +59,17 @@ class _HomeScreenState extends State<HomeScreen> {
     'November',
     'December',
   ];
+
+  final List<String> _years = List.generate(10, (index) => (DateTime.now().year - 5 + index).toString());
+
+  @override
+  void initState() {
+    super.initState();
+    // Set the current month and year
+    final DateTime now = DateTime.now();
+    _selectedMonth = _months[now.month - 1]; // Months are 1-indexed in DateTime
+    _selectedYear = now.year.toString();
+  }
 
   void _calculateTotalBill() {
     if (_formKey.currentState!.validate()) {
@@ -79,7 +93,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-
   void _previewData() {
     if (_formKey.currentState!.validate()) {
       _calculateTotalBill();
@@ -92,6 +105,7 @@ class _HomeScreenState extends State<HomeScreen> {
 Name: ${_nameController.text}
 Address: ${_addressController.text}
 Phone: ${_phoneController.text}
+Year: $_selectedYear
 Month: $_selectedMonth
 Rent: ${_rentController.text}
 Advance Rent: ${_advanceRentController.text}
@@ -100,41 +114,83 @@ GAS: ${_gasController.text}
 Electricity Bill: ${_electricityController.text}
 Service Charge: ${_serviceChargeController.text}
 Utility Bill: ${_utilityBillController.text}
-${_additionalControllers.asMap().entries.map((entry) => '${_additionalLabels[entry.key]}: ${entry.value.text}').join('\n')}
+${_additionalControllers.asMap().entries.map((entry) => '${_additionalLabelControllers[entry.key].text}: ${entry.value.text}').join('\n')}
 Notice: ${_noticeController.text}
 Total Bill: $_totalBill
 ''';
           }
 
           return AlertDialog(
-            title: Text('House rent info'),
+            title: Text(
+              'Invoice',
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
+            ),
             content: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Name: ${_nameController.text}'),
-                  Text('Address: ${_addressController.text}'),
-                  Text('Phone: ${_phoneController.text}'),
-                  Text('Month: $_selectedMonth'),
-                  Text('Rent: ${_rentController.text}'),
-                  Text('Advance Rent: ${_advanceRentController.text}'),
-                  Text('Due Rent: ${_dueRentController.text}'),
-                  Text('GAS: ${_gasController.text}'),
-                  Text('Electricity Bill: ${_electricityController.text}'),
-                  Text('Service Charge: ${_serviceChargeController.text}'),
-                  Text('Utility Bill: ${_utilityBillController.text}'),
-                  for (int i = 0; i < _additionalControllers.length; i++)
-                    Text('${_additionalLabels[i]}: ${_additionalControllers[i].text}'),
-                  Text('Notice: ${_noticeController.text}'),
-                  SizedBox(height: 16),
-                  Text(
-                    'Total Bill: $_totalBill',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 18,
-                    ),
+              child: Card(
+                elevation: 5,
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Customer Details',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text('Name: ${_nameController.text}'),
+                      Text('Address: ${_addressController.text}'),
+                      Text('Phone: ${_phoneController.text}'),
+                      SizedBox(height: 16),
+                      Text(
+                        'Invoice Details',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.blue,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Text('Year: $_selectedYear'),
+                      Text('Month: $_selectedMonth'),
+                      Text('Rent: ${_rentController.text}'),
+                      Text('Advance Rent: ${_advanceRentController.text}'),
+                      Text('Due Rent: ${_dueRentController.text}'),
+                      Text('GAS: ${_gasController.text}'),
+                      Text('Electricity Bill: ${_electricityController.text}'),
+                      Text('Service Charge: ${_serviceChargeController.text}'),
+                      Text('Utility Bill: ${_utilityBillController.text}'),
+                      for (int i = 0; i < _additionalControllers.length; i++)
+                        Text('${_additionalLabelControllers[i].text}: ${_additionalControllers[i].text}'),
+                      SizedBox(height: 16),
+                      Text(
+                        'Notice: ${_noticeController.text}',
+                        style: TextStyle(
+                          fontStyle: FontStyle.italic,
+                        ),
+                      ),
+                      SizedBox(height: 16),
+                      Divider(),
+                      SizedBox(height: 8),
+                      Text(
+                        'Total Bill: $_totalBill',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Colors.green,
+                        ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
             actions: [
@@ -153,7 +209,7 @@ Total Bill: $_totalBill
                 onPressed: () async {
                   try {
                     await FlutterShare.share(
-                      title: 'Preview Data', // Title of the shared content
+                      title: 'Invoice', // Title of the shared content
                       text: _formatPreviewData(), // Text to share
                     );
                   } catch (e) {
@@ -191,23 +247,27 @@ Total Bill: $_totalBill
     for (var controller in _additionalControllers) {
       controller.clear();
     }
+    for (var controller in _additionalLabelControllers) {
+      controller.clear();
+    }
     setState(() {
       _totalBill = 0.0;
       _selectedMonth = 'January';
+      _selectedYear = DateTime.now().year.toString();
     });
   }
 
   void _addAdditionalField() {
     setState(() {
       _additionalControllers.add(TextEditingController());
-      _additionalLabels.add('Additional Field ${_additionalControllers.length}');
+      _additionalLabelControllers.add(TextEditingController());
     });
   }
 
   void _removeAdditionalField(int index) {
     setState(() {
       _additionalControllers.removeAt(index);
-      _additionalLabels.removeAt(index);
+      _additionalLabelControllers.removeAt(index);
     });
   }
 
@@ -304,51 +364,171 @@ Total Bill: $_totalBill
                   },
                 ),
                 SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: DropdownButtonFormField<String>(
-                        value: _selectedMonth,
-                        decoration: InputDecoration(
-                          labelText: 'Month',
-                          border: OutlineInputBorder(),
-                        ),
-                        items: _months.map((String month) {
-                          return DropdownMenuItem<String>(
-                            value: month,
-                            child: Text(month),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedMonth = newValue!;
-                          });
-                        },
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    Expanded(
-                      flex: 3,
-                      child: TextFormField(
-                        controller: _rentController,
-                        decoration: InputDecoration(
-                          labelText: 'Rent of Month',
-                          border: OutlineInputBorder(),
-                        ),
-                        keyboardType: TextInputType.number,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter the rent';
-                          }
-                          if (double.tryParse(value) == null) {
-                            return 'Please enter a valid number';
-                          }
-                          return null;
-                        },
-                      ),
-                    ),
-                  ],
+                LayoutBuilder(
+                  builder: (context, constraints) {
+                    if (constraints.maxWidth < 600) {
+                      // Small screen: Use Column
+                      return Column(
+                        children: [
+                          // Year Dropdown
+                          DropdownButtonFormField<String>(
+                            value: _selectedYear,
+                            decoration: InputDecoration(
+                              labelText: 'Year',
+                              border: OutlineInputBorder(),
+                            ),
+                            items: _years.map((String year) {
+                              return DropdownMenuItem<String>(
+                                value: year,
+                                child: Text(year),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedYear = newValue!;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a year';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16),
+                          // Month Dropdown
+                          DropdownButtonFormField<String>(
+                            value: _selectedMonth,
+                            decoration: InputDecoration(
+                              labelText: 'Month',
+                              border: OutlineInputBorder(),
+                            ),
+                            items: _months.map((String month) {
+                              return DropdownMenuItem<String>(
+                                value: month,
+                                child: Text(month),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedMonth = newValue!;
+                              });
+                            },
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please select a month';
+                              }
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 16),
+                          // Rent of Month TextField
+                          TextFormField(
+                            controller: _rentController,
+                            decoration: InputDecoration(
+                              labelText: 'Rent of Month',
+                              border: OutlineInputBorder(),
+                            ),
+                            keyboardType: TextInputType.number,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter the rent';
+                              }
+                              if (double.tryParse(value) == null) {
+                                return 'Please enter a valid number';
+                              }
+                              return null;
+                            },
+                          ),
+                        ],
+                      );
+                    } else {
+                      // Large screen: Use Row
+                      return Row(
+                        children: [
+                          // Year Dropdown
+                          Expanded(
+                            flex: 2,
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedYear,
+                              decoration: InputDecoration(
+                                labelText: 'Year',
+                                border: OutlineInputBorder(),
+                              ),
+                              items: _years.map((String year) {
+                                return DropdownMenuItem<String>(
+                                  value: year,
+                                  child: Text(year),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedYear = newValue!;
+                                });
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a year';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          // Month Dropdown
+                          Expanded(
+                            flex: 2,
+                            child: DropdownButtonFormField<String>(
+                              value: _selectedMonth,
+                              decoration: InputDecoration(
+                                labelText: 'Month',
+                                border: OutlineInputBorder(),
+                              ),
+                              items: _months.map((String month) {
+                                return DropdownMenuItem<String>(
+                                  value: month,
+                                  child: Text(month),
+                                );
+                              }).toList(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedMonth = newValue!;
+                                });
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please select a month';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          // Rent of Month TextField
+                          Expanded(
+                            flex: 3,
+                            child: TextFormField(
+                              controller: _rentController,
+                              decoration: InputDecoration(
+                                labelText: 'Rent of Month',
+                                border: OutlineInputBorder(),
+                              ),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter the rent';
+                                }
+                                if (double.tryParse(value) == null) {
+                                  return 'Please enter a valid number';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                        ],
+                      );
+                    }
+                  },
                 ),
                 SizedBox(height: 16),
                 TextFormField(
@@ -466,9 +646,25 @@ Total Bill: $_totalBill
                         children: [
                           Expanded(
                             child: TextFormField(
+                              controller: _additionalLabelControllers[i],
+                              decoration: InputDecoration(
+                                labelText: 'Field Label',
+                                border: OutlineInputBorder(),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Please enter a label';
+                                }
+                                return null;
+                              },
+                            ),
+                          ),
+                          SizedBox(width: 16),
+                          Expanded(
+                            child: TextFormField(
                               controller: _additionalControllers[i],
                               decoration: InputDecoration(
-                                labelText: _additionalLabels[i],
+                                labelText: 'Value',
                                 border: OutlineInputBorder(),
                               ),
                               keyboardType: TextInputType.number,
@@ -510,11 +706,14 @@ Total Bill: $_totalBill
                   },
                 ),
                 SizedBox(height: 24),
+                Divider(),
+                SizedBox(height: 8),
                 Text(
                   'Total Bill: $_totalBill',
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                    fontSize: 20,
+                    color: Colors.green,
                   ),
                 ),
                 SizedBox(height: 24),
@@ -533,7 +732,11 @@ Total Bill: $_totalBill
                     ),
                     ElevatedButton(
                       onPressed: _clearData,
-                      child: Text('Clear'),
+                      child: Text('Clear',
+                        style: TextStyle(
+                            color: Colors.red
+                        ),
+                      ),
                     ),
                   ],
                 ),
