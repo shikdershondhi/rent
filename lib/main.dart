@@ -37,8 +37,9 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _utilityBillController = TextEditingController();
   final TextEditingController _noticeController = TextEditingController();
 
-  String? _selectedMonth = 'January';
-  String? _selectedYear;
+  // Initialize with the current month and year
+  String _selectedMonth = DateTime.now().month.toString(); // Default value
+  String _selectedYear = DateTime.now().year.toString(); // Default value
   double _totalBill = 0.0;
   List<TextEditingController> _additionalControllers = [];
   List<String> _additionalLabels = [];
@@ -60,6 +61,14 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<String> _years = List.generate(10, (index) => (DateTime.now().year - 5 + index).toString());
 
+  @override
+  void initState() {
+    super.initState();
+    // Set the current month and year
+    final DateTime now = DateTime.now();
+    _selectedMonth = _months[now.month - 1]; // Months are 1-indexed in DateTime
+    _selectedYear = now.year.toString();
+  }
   void _calculateTotalBill() {
     if (_formKey.currentState!.validate()) {
       double total = double.parse(_rentController.text) +
@@ -239,7 +248,7 @@ Total Bill: $_totalBill
     setState(() {
       _totalBill = 0.0;
       _selectedMonth = 'January';
-      _selectedYear = null;
+      _selectedYear = DateTime.now().year.toString();
     });
   }
 
