@@ -7,6 +7,8 @@ void main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -20,6 +22,8 @@ class MyApp extends StatelessWidget {
 }
 
 class HomeScreen extends StatefulWidget {
+  const HomeScreen({super.key});
+
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -42,8 +46,8 @@ class _HomeScreenState extends State<HomeScreen> {
   String _selectedMonth = DateTime.now().month.toString(); // Default value
   String _selectedYear = DateTime.now().year.toString(); // Default value
   double _totalBill = 0.0;
-  List<TextEditingController> _additionalControllers = [];
-  List<TextEditingController> _additionalLabelControllers = [];
+  final List<TextEditingController> _additionalControllers = [];
+  final List<TextEditingController> _additionalLabelControllers = [];
 
   final List<String> _months = [
     'January',
@@ -100,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
         context: context,
         builder: (context) {
           // Function to format the preview data as a string
-          String _formatPreviewData() {
+          String formatPreviewData() {
             return '''
 Name: ${_nameController.text}
 Address: ${_addressController.text}
@@ -121,7 +125,7 @@ Total Bill: $_totalBill
           }
 
           return AlertDialog(
-            title: Text(
+            title: const Text(
               'Invoice',
               style: TextStyle(
                 fontSize: 24,
@@ -137,7 +141,7 @@ Total Bill: $_totalBill
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Customer Details',
                         style: TextStyle(
                           fontSize: 18,
@@ -145,12 +149,12 @@ Total Bill: $_totalBill
                           color: Colors.blue,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text('Name: ${_nameController.text}'),
                       Text('Address: ${_addressController.text}'),
                       Text('Phone: ${_phoneController.text}'),
-                      SizedBox(height: 16),
-                      Text(
+                      const SizedBox(height: 16),
+                      const Text(
                         'Invoice Details',
                         style: TextStyle(
                           fontSize: 18,
@@ -158,7 +162,7 @@ Total Bill: $_totalBill
                           color: Colors.blue,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text('Year: $_selectedYear'),
                       Text('Month: $_selectedMonth'),
                       Text('Rent: ${_rentController.text}'),
@@ -170,19 +174,19 @@ Total Bill: $_totalBill
                       Text('Utility Bill: ${_utilityBillController.text}'),
                       for (int i = 0; i < _additionalControllers.length; i++)
                         Text('${_additionalLabelControllers[i].text}: ${_additionalControllers[i].text}'),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                       Text(
                         'Notice: ${_noticeController.text}',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontStyle: FontStyle.italic,
                         ),
                       ),
-                      SizedBox(height: 16),
-                      Divider(),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 16),
+                      const Divider(),
+                      const SizedBox(height: 8),
                       Text(
                         'Total Bill: $_totalBill',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 20,
                           color: Colors.green,
@@ -197,12 +201,12 @@ Total Bill: $_totalBill
               // Copy button
               TextButton(
                 onPressed: () {
-                  Clipboard.setData(ClipboardData(text: _formatPreviewData())); // Copy data to clipboard
+                  Clipboard.setData(ClipboardData(text: formatPreviewData())); // Copy data to clipboard
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Data copied to clipboard!')),
+                    const SnackBar(content: Text('Data copied to clipboard!')),
                   );
                 },
-                child: Text('Copy'),
+                child: const Text('Copy'),
               ),
               // Share button
               TextButton(
@@ -210,7 +214,7 @@ Total Bill: $_totalBill
                   try {
                     await FlutterShare.share(
                       title: 'Invoice', // Title of the shared content
-                      text: _formatPreviewData(), // Text to share
+                      text: formatPreviewData(), // Text to share
                     );
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
@@ -218,12 +222,12 @@ Total Bill: $_totalBill
                     );
                   }
                 },
-                child: Text('Share'),
+                child: const Text('Share'),
               ),
               // Close button
               TextButton(
                 onPressed: () => Navigator.pop(context),
-                child: Text('Close'),
+                child: const Text('Close'),
               ),
             ],
           );
@@ -275,13 +279,13 @@ Total Bill: $_totalBill
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Rent and Bill Calculator'),
+        title: const Text('Rent and Bill Calculator'),
       ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
           children: [
-            DrawerHeader(
+            const DrawerHeader(
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
@@ -294,7 +298,7 @@ Total Bill: $_totalBill
               ),
             ),
             ListTile(
-              title: Text('Settings'),
+              title: const Text('Settings'),
               onTap: () {
                 Navigator.pop(context);
               },
@@ -311,7 +315,7 @@ Total Bill: $_totalBill
               children: [
                 TextFormField(
                   controller: _nameController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Name',
                     border: OutlineInputBorder(),
                   ),
@@ -328,10 +332,10 @@ Total Bill: $_totalBill
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _addressController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Address',
                     border: OutlineInputBorder(),
                   ),
@@ -342,10 +346,10 @@ Total Bill: $_totalBill
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _phoneController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Phone',
                     border: OutlineInputBorder(),
                   ),
@@ -363,7 +367,7 @@ Total Bill: $_totalBill
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 LayoutBuilder(
                   builder: (context, constraints) {
                     if (constraints.maxWidth < 600) {
@@ -373,7 +377,7 @@ Total Bill: $_totalBill
                           // Year Dropdown
                           DropdownButtonFormField<String>(
                             value: _selectedYear,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Year',
                               border: OutlineInputBorder(),
                             ),
@@ -395,11 +399,11 @@ Total Bill: $_totalBill
                               return null;
                             },
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           // Month Dropdown
                           DropdownButtonFormField<String>(
                             value: _selectedMonth,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Month',
                               border: OutlineInputBorder(),
                             ),
@@ -421,11 +425,11 @@ Total Bill: $_totalBill
                               return null;
                             },
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           // Rent of Month TextField
                           TextFormField(
                             controller: _rentController,
-                            decoration: InputDecoration(
+                            decoration: const InputDecoration(
                               labelText: 'Rent of Month',
                               border: OutlineInputBorder(),
                             ),
@@ -451,7 +455,7 @@ Total Bill: $_totalBill
                             flex: 2,
                             child: DropdownButtonFormField<String>(
                               value: _selectedYear,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Year',
                                 border: OutlineInputBorder(),
                               ),
@@ -474,13 +478,13 @@ Total Bill: $_totalBill
                               },
                             ),
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           // Month Dropdown
                           Expanded(
                             flex: 2,
                             child: DropdownButtonFormField<String>(
                               value: _selectedMonth,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Month',
                                 border: OutlineInputBorder(),
                               ),
@@ -503,13 +507,13 @@ Total Bill: $_totalBill
                               },
                             ),
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           // Rent of Month TextField
                           Expanded(
                             flex: 3,
                             child: TextFormField(
                               controller: _rentController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Rent of Month',
                                 border: OutlineInputBorder(),
                               ),
@@ -530,10 +534,10 @@ Total Bill: $_totalBill
                     }
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _advanceRentController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Advance Rent of Month',
                     border: OutlineInputBorder(),
                   ),
@@ -548,10 +552,10 @@ Total Bill: $_totalBill
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _dueRentController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Due Rent of Month',
                     border: OutlineInputBorder(),
                   ),
@@ -566,10 +570,10 @@ Total Bill: $_totalBill
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _gasController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'GAS',
                     border: OutlineInputBorder(),
                   ),
@@ -584,10 +588,10 @@ Total Bill: $_totalBill
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _electricityController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Electricity Bill',
                     border: OutlineInputBorder(),
                   ),
@@ -602,10 +606,10 @@ Total Bill: $_totalBill
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _serviceChargeController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Service Charge',
                     border: OutlineInputBorder(),
                   ),
@@ -620,10 +624,10 @@ Total Bill: $_totalBill
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _utilityBillController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Utility Bill',
                     border: OutlineInputBorder(),
                   ),
@@ -638,7 +642,7 @@ Total Bill: $_totalBill
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 for (int i = 0; i < _additionalControllers.length; i++)
                   Column(
                     children: [
@@ -647,7 +651,7 @@ Total Bill: $_totalBill
                           Expanded(
                             child: TextFormField(
                               controller: _additionalLabelControllers[i],
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Field Label',
                                 border: OutlineInputBorder(),
                               ),
@@ -659,11 +663,11 @@ Total Bill: $_totalBill
                               },
                             ),
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           Expanded(
                             child: TextFormField(
                               controller: _additionalControllers[i],
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Value',
                                 border: OutlineInputBorder(),
                               ),
@@ -677,22 +681,22 @@ Total Bill: $_totalBill
                             ),
                           ),
                           IconButton(
-                            icon: Icon(Icons.delete, color: Colors.red),
+                            icon: const Icon(Icons.delete, color: Colors.red),
                             onPressed: () => _removeAdditionalField(i),
                           ),
                         ],
                       ),
-                      SizedBox(height: 16),
+                      const SizedBox(height: 16),
                     ],
                   ),
                 ElevatedButton(
                   onPressed: _addAdditionalField,
-                  child: Text('Add Additional Field'),
+                  child: const Text('Add Additional Field'),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _noticeController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Notice',
                     border: OutlineInputBorder(),
                   ),
@@ -705,18 +709,18 @@ Total Bill: $_totalBill
                     return null;
                   },
                 ),
-                SizedBox(height: 24),
-                Divider(),
-                SizedBox(height: 8),
+                const SizedBox(height: 24),
+                const Divider(),
+                const SizedBox(height: 8),
                 Text(
                   'Total Bill: $_totalBill',
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 20,
                     color: Colors.green,
                   ),
                 ),
-                SizedBox(height: 24),
+                const SizedBox(height: 24),
                 Wrap(
                   spacing: 8,
                   runSpacing: 8,
@@ -724,15 +728,15 @@ Total Bill: $_totalBill
                   children: [
                     ElevatedButton(
                       onPressed: _calculateTotalBill,
-                      child: Text('Calculate Bill'),
+                      child: const Text('Calculate Bill'),
                     ),
                     ElevatedButton(
                       onPressed: _previewData,
-                      child: Text('Preview'),
+                      child: const Text('Preview'),
                     ),
                     ElevatedButton(
                       onPressed: _clearData,
-                      child: Text('Clear',
+                      child: const Text('Clear',
                         style: TextStyle(
                             color: Colors.red
                         ),
