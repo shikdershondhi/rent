@@ -69,17 +69,26 @@ class _HomeScreenState extends State<HomeScreen> {
     final DateTime now = DateTime.now();
     _selectedMonth = _months[now.month - 1]; // Months are 1-indexed in DateTime
     _selectedYear = now.year.toString();
+    // Initialize all bill fields with "0"
+    _rentController.text = "0";
+    _advanceRentController.text = "0";
+    _dueRentController.text = "0";
+    _gasController.text = "0";
+    _electricityController.text = "0";
+    _serviceChargeController.text = "0";
+    _utilityBillController.text = "0";
   }
 
   void _calculateTotalBill() {
     if (_formKey.currentState!.validate()) {
-      double total = double.parse(_rentController.text= "0") +
-          double.parse(_advanceRentController.text= "0") +
-          double.parse(_dueRentController.text= "0") +
-          double.parse(_gasController.text= "0") +
-          double.parse(_electricityController.text= "0") +
-          double.parse(_serviceChargeController.text= "0") +
-          double.parse(_utilityBillController.text= "0");
+      double total = double.parse(_rentController.text) +
+          double.parse(_dueRentController.text) +
+          double.parse(_gasController.text) +
+          double.parse(_electricityController.text) +
+          double.parse(_serviceChargeController.text) +
+          double.parse(_utilityBillController.text);
+      // Subtract advance rent from the total
+      total -= double.parse(_advanceRentController.text);
 
       for (var controller in _additionalControllers) {
         if (controller.text.isNotEmpty) {
@@ -236,13 +245,13 @@ Total Bill: $_totalBill
     _nameController.clear();
     _addressController.clear();
     _phoneController.clear();
-    _rentController.text= "0";
-    _advanceRentController.text= "0";
-    _dueRentController.text= "0";
-    _gasController.text= "0";
-    _electricityController.text= "0";
-    _serviceChargeController.text= "0";
-    _utilityBillController.text= "0";
+    _rentController.clear();
+    _advanceRentController.clear();
+    _dueRentController.clear();
+    _gasController.clear();
+    _electricityController.clear();
+    _serviceChargeController.clear();
+    _utilityBillController.clear();
     _noticeController.clear();
     for (var controller in _additionalControllers) {
       controller.clear();
