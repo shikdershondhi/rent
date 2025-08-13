@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_share/flutter_share.dart';
 
 void main() async {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -38,7 +38,8 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _dueRentController = TextEditingController();
   final TextEditingController _gasController = TextEditingController();
   final TextEditingController _electricityController = TextEditingController();
-  final TextEditingController _serviceChargeController = TextEditingController();
+  final TextEditingController _serviceChargeController =
+      TextEditingController();
   final TextEditingController _utilityBillController = TextEditingController();
   final TextEditingController _noticeController = TextEditingController();
 
@@ -64,7 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
     'December',
   ];
 
-  final List<String> _years = List.generate(10, (index) => (DateTime.now().year - 5 + index).toString());
+  final List<String> _years = List.generate(
+      10, (index) => (DateTime.now().year - 5 + index).toString());
 
   @override
   void initState() {
@@ -182,7 +184,8 @@ Total Bill: $_totalBill
                       Text('Service Charge: ${_serviceChargeController.text}'),
                       Text('Utility Bill: ${_utilityBillController.text}'),
                       for (int i = 0; i < _additionalControllers.length; i++)
-                        Text('${_additionalLabelControllers[i].text}: ${_additionalControllers[i].text}'),
+                        Text(
+                            '${_additionalLabelControllers[i].text}: ${_additionalControllers[i].text}'),
                       const SizedBox(height: 16),
                       Text(
                         'Notice: ${_noticeController.text}',
@@ -210,7 +213,8 @@ Total Bill: $_totalBill
               // Copy button
               TextButton(
                 onPressed: () {
-                  Clipboard.setData(ClipboardData(text: formatPreviewData())); // Copy data to clipboard
+                  Clipboard.setData(ClipboardData(
+                      text: formatPreviewData())); // Copy data to clipboard
                   ScaffoldMessenger.of(context).showSnackBar(
                     const SnackBar(content: Text('Data copied to clipboard!')),
                   );
@@ -682,7 +686,9 @@ Total Bill: $_totalBill
                               ),
                               keyboardType: TextInputType.number,
                               validator: (value) {
-                                if (value != null && value.isNotEmpty && double.tryParse(value) == null) {
+                                if (value != null &&
+                                    value.isNotEmpty &&
+                                    double.tryParse(value) == null) {
                                   return 'Please enter a valid number';
                                 }
                                 return null;
@@ -745,10 +751,9 @@ Total Bill: $_totalBill
                     ),
                     ElevatedButton(
                       onPressed: _clearData,
-                      child: const Text('Clear',
-                        style: TextStyle(
-                            color: Colors.red
-                        ),
+                      child: const Text(
+                        'Clear',
+                        style: TextStyle(color: Colors.red),
                       ),
                     ),
                   ],
