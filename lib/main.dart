@@ -5,11 +5,11 @@ import 'package:flutter_share/flutter_share.dart';
 final ValueNotifier<ThemeMode> themeNotifier = ValueNotifier(ThemeMode.light);
 
 void main() async {
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.blue,
           ),
           themeMode: mode,
-          home: HomeScreen(),
+          home: const HomeScreen(),
         );
       },
     );
@@ -38,6 +38,7 @@ class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _HomeScreenState createState() => _HomeScreenState();
 }
 
@@ -243,6 +244,7 @@ Total Bill: $_totalBill
                       text: formatPreviewData(), // Text to share
                     );
                   } catch (e) {
+                    // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('Failed to share: $e')),
                     );
