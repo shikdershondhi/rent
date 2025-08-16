@@ -31,7 +31,8 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
-
+.fvmrc
+devtools_options.yaml
 # Symbolication related
 app.*.symbols
 
