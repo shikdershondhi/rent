@@ -65,14 +65,20 @@ class _HomeScreenState extends State<HomeScreen> {
                 valueListenable: themeNotifier,
                 builder: (context, mode, _) => Switch(
                   value: mode == ThemeMode.dark,
-                  onChanged: (val) => themeNotifier.value =
-                      val ? ThemeMode.dark : ThemeMode.light,
+                  onChanged: (val) {
+                    final newMode = val ? ThemeMode.dark : ThemeMode.light;
+                    themeNotifier.value = newMode;
+                    ThemePersistence.saveThemeMode(newMode);
+                  },
                 ),
               ),
-              onTap: () => themeNotifier.value =
-                  themeNotifier.value == ThemeMode.dark
-                      ? ThemeMode.light
-                      : ThemeMode.dark,
+              onTap: () {
+                final newMode = themeNotifier.value == ThemeMode.dark
+                    ? ThemeMode.light
+                    : ThemeMode.dark;
+                themeNotifier.value = newMode;
+                ThemePersistence.saveThemeMode(newMode);
+              },
             ),
           ],
         ),
