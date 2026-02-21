@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_share/flutter_share.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
 import '../home_controller.dart';
 
@@ -58,7 +58,7 @@ class BillForm extends StatelessWidget {
                 children: [
                   Expanded(
                     child: DropdownButtonFormField<String>(
-                      value: controller.selectedYear,
+                      initialValue: controller.selectedYear,
                       decoration: const InputDecoration(
                           labelText: 'Year', border: OutlineInputBorder()),
                       items: HomeController.years
@@ -71,7 +71,7 @@ class BillForm extends StatelessWidget {
                   const SizedBox(width: 16),
                   Expanded(
                     child: DropdownButtonFormField<String>(
-                      value: controller.selectedMonth,
+                      initialValue: controller.selectedMonth,
                       decoration: const InputDecoration(
                           labelText: 'Month', border: OutlineInputBorder()),
                       items: HomeController.months
@@ -380,8 +380,10 @@ class BillForm extends StatelessWidget {
               TextButton(
                 onPressed: () async {
                   try {
-                    await FlutterShare.share(
-                        title: 'Invoice', text: controller.history.first);
+                    await Share.share(
+                      controller.history.first,
+                      subject: 'Invoice',
+                    );
                   } catch (e) {
                     // ignore: use_build_context_synchronously
                     ScaffoldMessenger.of(context).showSnackBar(

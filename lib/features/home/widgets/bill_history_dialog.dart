@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_share/flutter_share.dart';
+import 'package:share_plus/share_plus.dart';
 
 void showBillHistoryDialog(BuildContext context, List<String> history) {
   showDialog(
@@ -23,12 +23,11 @@ void showBillHistoryDialog(BuildContext context, List<String> history) {
                         icon: const Icon(Icons.share),
                         onPressed: () async {
                           try {
-                            await FlutterShare.share(
-                              title: 'Calculation History',
-                              text: history[i],
+                            await Share.share(
+                              history[i],
+                              subject: 'Calculation History',
                             );
                           } catch (e) {
-                            // ignore: use_build_context_synchronously
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Failed to share: $e')),
                             );
