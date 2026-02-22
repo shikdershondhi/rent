@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
-import '../home_controller.dart';
+import '../coaching_controller.dart';
 
-void showBillHistoryDialog(BuildContext context, HomeController controller) {
+void showCoachingHistoryDialog(
+    BuildContext context, CoachingController controller) {
   showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(
-        title: const Text('Calculation History'),
+        title: const Text('Coaching Calculation History'),
         content: SizedBox(
           width: 400,
           child: controller.history.isEmpty
@@ -43,7 +44,7 @@ void showBillHistoryDialog(BuildContext context, HomeController controller) {
                                 try {
                                   await Share.share(
                                     controller.history[i],
-                                    subject: 'Invoice',
+                                    subject: 'Coaching Calculation History',
                                   );
                                 } catch (e) {
                                   ScaffoldMessenger.of(context).showSnackBar(

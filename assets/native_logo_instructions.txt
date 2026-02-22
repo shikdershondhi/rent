@@ -1,0 +1,28 @@
+Native launch image instructions
+
+Android:
+- The Android launch screen uses the native launcher icon referenced in `android/app/src/main/res/drawable/launch_background.xml` and `drawable-v21/launch_background.xml`.
+- To make your logo appear on the Android loading screen and launcher, replace the mipmap launcher icons under:
+  - `android/app/src/main/res/mipmap-mdpi/ic_launcher.png`
+  - `android/app/src/main/res/mipmap-hdpi/ic_launcher.png`
+  - `android/app/src/main/res/mipmap-xhdpi/ic_launcher.png`
+  - `android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png`
+  - `android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png`
+- You can generate properly sized launcher icons using `flutter_launcher_icons` or an online tool and copy them into the mipmap folders.
+
+iOS:
+- The iOS launch screen references an image set named `LaunchImage` (see `ios/Runner/Base.lproj/LaunchScreen.storyboard`).
+- Place your launch images into `ios/Runner/Assets.xcassets/LaunchImage.imageset` with filenames matching the entries in `Contents.json`:
+  - `LaunchImage.png` (1x)
+  - `LaunchImage@2x.png` (2x)
+  - `LaunchImage@3x.png` (3x)
+- Alternatively, use Xcode's asset catalog and AppIcon tools to generate a proper set.
+
+App icon (launcher icon):
+- If you want the app icon (the one users tap to open the app) to be your logo, use `flutter_launcher_icons` or replace the mipmap and iOS AppIcon images in the platform folders.
+
+After copying the images, run:
+
+flutter pub get
+flutter build apk
+(or `flutter run` to test on device)

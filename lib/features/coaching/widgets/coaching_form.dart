@@ -8,21 +8,21 @@ import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
 
-import '../home_controller.dart';
+import '../coaching_controller.dart';
 
-class BillForm extends StatefulWidget {
-  const BillForm({super.key});
+class CoachingForm extends StatefulWidget {
+  const CoachingForm({super.key});
 
   @override
-  State<BillForm> createState() => _BillFormState();
+  State<CoachingForm> createState() => _CoachingFormState();
 }
 
-class _BillFormState extends State<BillForm> {
+class _CoachingFormState extends State<CoachingForm> {
   final GlobalKey repaintKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
-    final controller = Provider.of<HomeController>(context);
+    final controller = Provider.of<CoachingController>(context);
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -35,34 +35,35 @@ class _BillFormState extends State<BillForm> {
                 decoration: const InputDecoration(
                     labelText: 'Name', border: OutlineInputBorder()),
                 validator: (value) => value == null || value.isEmpty
-                    ? 'Please enter your name'
+                    ? 'Please enter a name'
                     : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: controller.addressController,
+                controller: controller.classController,
                 decoration: const InputDecoration(
-                    labelText: 'Address', border: OutlineInputBorder()),
+                    labelText: 'Class', border: OutlineInputBorder()),
                 validator: (value) => value == null || value.isEmpty
-                    ? 'Please enter your address'
+                    ? 'Please enter a class'
                     : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: controller.phoneController,
+                controller: controller.batchController,
                 decoration: const InputDecoration(
-                    labelText: 'Phone', border: OutlineInputBorder()),
-                keyboardType: TextInputType.phone,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
-                  }
-                  if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                    return 'Only numbers are allowed';
-                  }
-                  return null;
-                },
+                    labelText: 'Batch', border: OutlineInputBorder()),
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter a batch'
+                    : null,
+              ),
+              const SizedBox(height: 16),
+              TextFormField(
+                controller: controller.sessionController,
+                decoration: const InputDecoration(
+                    labelText: 'Session', border: OutlineInputBorder()),
+                validator: (value) => value == null || value.isEmpty
+                    ? 'Please enter a session'
+                    : null,
               ),
               const SizedBox(height: 16),
               Row(
@@ -72,7 +73,7 @@ class _BillFormState extends State<BillForm> {
                       initialValue: controller.selectedYear,
                       decoration: const InputDecoration(
                           labelText: 'Year', border: OutlineInputBorder()),
-                      items: HomeController.years
+                      items: CoachingController.years
                           .map((year) =>
                               DropdownMenuItem(value: year, child: Text(year)))
                           .toList(),
@@ -85,7 +86,7 @@ class _BillFormState extends State<BillForm> {
                       initialValue: controller.selectedMonth,
                       decoration: const InputDecoration(
                           labelText: 'Month', border: OutlineInputBorder()),
-                      items: HomeController.months
+                      items: CoachingController.months
                           .map((month) => DropdownMenuItem(
                               value: month, child: Text(month)))
                           .toList(),
@@ -96,14 +97,14 @@ class _BillFormState extends State<BillForm> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: controller.rentController,
+                controller: controller.amountController,
                 decoration: const InputDecoration(
-                    labelText: 'Rent of Month', border: OutlineInputBorder()),
+                    labelText: 'Amount', border: OutlineInputBorder()),
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the rent';
+                    return 'Please enter the amount';
                   }
                   if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
                     return 'Only whole numbers are allowed';
@@ -113,15 +114,14 @@ class _BillFormState extends State<BillForm> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: controller.advanceRentController,
+                controller: controller.advanceController,
                 decoration: const InputDecoration(
-                    labelText: 'Advance Rent of Month',
-                    border: OutlineInputBorder()),
+                    labelText: 'Advance Fee', border: OutlineInputBorder()),
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the advance rent';
+                    return 'Please enter the advance amount';
                   }
                   if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
                     return 'Only whole numbers are allowed';
@@ -131,15 +131,14 @@ class _BillFormState extends State<BillForm> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: controller.dueRentController,
+                controller: controller.dueController,
                 decoration: const InputDecoration(
-                    labelText: 'Due Rent of Month',
-                    border: OutlineInputBorder()),
+                    labelText: 'Due', border: OutlineInputBorder()),
                 keyboardType: TextInputType.number,
                 inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the due rent';
+                    return 'Please enter the due amount';
                   }
                   if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
                     return 'Only whole numbers are allowed';
@@ -148,73 +147,27 @@ class _BillFormState extends State<BillForm> {
                 },
               ),
               const SizedBox(height: 16),
-              TextFormField(
-                controller: controller.gasController,
-                decoration: const InputDecoration(
-                    labelText: 'GAS', border: OutlineInputBorder()),
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the GAS bill';
-                  }
-                  if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                    return 'Only whole numbers are allowed';
-                  }
-                  return null;
+              GestureDetector(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                      context: context,
+                      initialDate: controller.selectedDate ?? DateTime.now(),
+                      firstDate: DateTime(2000),
+                      lastDate: DateTime(2100));
+                  if (picked != null) controller.pickDate(picked);
                 },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: controller.electricityController,
-                decoration: const InputDecoration(
-                    labelText: 'Electricity Bill',
-                    border: OutlineInputBorder()),
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the electricity bill';
-                  }
-                  if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                    return 'Only whole numbers are allowed';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: controller.serviceChargeController,
-                decoration: const InputDecoration(
-                    labelText: 'Service Charge', border: OutlineInputBorder()),
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the service charge';
-                  }
-                  if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                    return 'Only whole numbers are allowed';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
-                controller: controller.utilityBillController,
-                decoration: const InputDecoration(
-                    labelText: 'Utility Bill', border: OutlineInputBorder()),
-                keyboardType: TextInputType.number,
-                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the utility bill';
-                  }
-                  if (!RegExp(r'^[0-9]+$').hasMatch(value)) {
-                    return 'Only whole numbers are allowed';
-                  }
-                  return null;
-                },
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: controller.dateController,
+                    decoration: const InputDecoration(
+                      labelText: 'Date',
+                      border: OutlineInputBorder(),
+                    ),
+                    validator: (value) => controller.selectedDate == null
+                        ? 'Please select a date'
+                        : null,
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
               for (int i = 0; i < controller.additionalControllers.length; i++)
@@ -259,7 +212,7 @@ class _BillFormState extends State<BillForm> {
                 ),
               ElevatedButton(
                 onPressed: controller.addAdditionalField,
-                child: const Text('Add Additional Field'),
+                child: const Text('Add Custom Field'),
               ),
               const SizedBox(height: 16),
               TextFormField(
@@ -275,7 +228,7 @@ class _BillFormState extends State<BillForm> {
               const SizedBox(height: 24),
               const Divider(),
               const SizedBox(height: 8),
-              Text('Total Bill: ${controller.totalBill}',
+              Text('Total Fee: ${controller.totalBill}',
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 20,
@@ -287,9 +240,8 @@ class _BillFormState extends State<BillForm> {
                 alignment: WrapAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () async =>
-                        await controller.calculateTotalBill(),
-                    child: const Text('Calculate Bill'),
+                    onPressed: controller.calculateTotalBill,
+                    child: const Text('Calculate Fee'),
                   ),
                   ElevatedButton(
                     onPressed: () => _previewData(context, controller),
@@ -309,7 +261,7 @@ class _BillFormState extends State<BillForm> {
     );
   }
 
-  void _previewData(BuildContext context, HomeController controller) {
+  void _previewData(BuildContext context, CoachingController controller) {
     if (controller.formKey.currentState?.validate() ?? false) {
       controller.calculateTotalBill();
       showDialog(
@@ -336,15 +288,16 @@ class _BillFormState extends State<BillForm> {
                               style: const TextStyle(
                                   fontSize: 14, fontWeight: FontWeight.bold)),
                         const SizedBox(height: 8),
-                        const Text('Customer Details',
+                        const Text('Student Details',
                             style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
                                 color: Colors.blue)),
                         const SizedBox(height: 8),
                         Text('Name: ${controller.nameController.text}'),
-                        Text('Address: ${controller.addressController.text}'),
-                        Text('Phone: ${controller.phoneController.text}'),
+                        Text('Class: ${controller.classController.text}'),
+                        Text('Batch: ${controller.batchController.text}'),
+                        Text('Session: ${controller.sessionController.text}'),
                         const SizedBox(height: 16),
                         const Text('Invoice Details',
                             style: TextStyle(
@@ -354,17 +307,10 @@ class _BillFormState extends State<BillForm> {
                         const SizedBox(height: 8),
                         Text('Year: ${controller.selectedYear}'),
                         Text('Month: ${controller.selectedMonth}'),
-                        Text('Rent: ${controller.rentController.text}'),
+                        Text('Amount: ${controller.amountController.text}'),
                         Text(
-                            'Advance Rent: ${controller.advanceRentController.text}'),
-                        Text('Due Rent: ${controller.dueRentController.text}'),
-                        Text('GAS: ${controller.gasController.text}'),
-                        Text(
-                            'Electricity Bill: ${controller.electricityController.text}'),
-                        Text(
-                            'Service Charge: ${controller.serviceChargeController.text}'),
-                        Text(
-                            'Utility Bill: ${controller.utilityBillController.text}'),
+                            'Advance Fee: ${controller.advanceController.text}'),
+                        Text('Due: ${controller.dueController.text}'),
                         for (int i = 0;
                             i < controller.additionalControllers.length;
                             i++)
@@ -377,7 +323,7 @@ class _BillFormState extends State<BillForm> {
                         const SizedBox(height: 16),
                         const Divider(),
                         const SizedBox(height: 8),
-                        Text('Total Bill: ${controller.totalBill}',
+                        Text('Total Fee: ${controller.totalBill}',
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold,
                                 fontSize: 20,
@@ -424,6 +370,7 @@ class _BillFormState extends State<BillForm> {
                     ),
                     ElevatedButton(
                       onPressed: () async {
+                        // Save as image
                         try {
                           final granted = await _requestSavePermission();
                           if (!granted) {
@@ -490,6 +437,7 @@ class _BillFormState extends State<BillForm> {
 
   Future<bool> _requestSavePermission() async {
     if (Platform.isAndroid) {
+      // Try both storage and photos permissions to cover Android 13+
       final storageStatus = await Permission.storage.status;
       if (storageStatus.isGranted) return true;
       final photosStatus = await Permission.photos.status;
@@ -500,6 +448,7 @@ class _BillFormState extends State<BillForm> {
       final p = statuses[Permission.photos];
       if (s?.isGranted == true || p?.isGranted == true) return true;
 
+      // If permanently denied, prompt to open app settings
       if (s?.isPermanentlyDenied == true || p?.isPermanentlyDenied == true) {
         final open = await showDialog<bool>(
           context: context,
