@@ -198,4 +198,20 @@ class CoachingController extends ChangeNotifier {
     lastInvoiceId = null;
     notifyListeners();
   }
+
+  Future<void> removeHistoryAt(int index) async {
+    if (index < 0 || index >= history.length) return;
+    history.removeAt(index);
+    await saveHistory();
+    if (history.isNotEmpty && history.first.startsWith('Invoice ID:')) {
+      lastInvoiceId = history.first
+          .split('\n')
+          .first
+          .replaceFirst('Invoice ID:', '')
+          .trim();
+    } else {
+      lastInvoiceId = null;
+    }
+    notifyListeners();
+  }
 }

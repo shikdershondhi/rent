@@ -67,7 +67,7 @@ class _CoachingScreenState extends State<CoachingScreen> {
         child: const CoachingForm(),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => showCoachingHistoryDialog(context, controller.history),
+        onPressed: () => showCoachingHistoryDialog(context, controller),
         child: const Icon(Icons.history),
         tooltip: 'History',
       ),
