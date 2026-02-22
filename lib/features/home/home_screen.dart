@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'home_controller.dart';
 import 'widgets/bill_form.dart';
 import 'widgets/bill_history_dialog.dart';
+import '../coaching/coaching_screen.dart';
 import '../../../core/theme.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -39,6 +40,17 @@ class _HomeScreenState extends State<HomeScreen> {
               decoration: BoxDecoration(color: Colors.blue),
               child: Text('Settings',
                   style: TextStyle(color: Colors.white, fontSize: 24)),
+            ),
+            ListTile(
+              leading: const Icon(Icons.school),
+              title: const Text('Coaching Fee'),
+              onTap: () {
+                Navigator.pop(context);
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const CoachingScreen()),
+                );
+              },
             ),
             ListTile(
               leading: const Icon(Icons.settings),
