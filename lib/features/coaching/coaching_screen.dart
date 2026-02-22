@@ -23,7 +23,6 @@ class _CoachingScreenState extends State<CoachingScreen> {
 
   @override
   void dispose() {
-    controller.dispose();
     super.dispose();
   }
 
