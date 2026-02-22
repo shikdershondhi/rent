@@ -52,45 +52,48 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               },
             ),
-            ListTile(
+            ExpansionTile(
               leading: const Icon(Icons.settings),
               title: const Text('Settings'),
-              onTap: () => Navigator.pop(context),
-            ),
-            ListTile(
-              leading: const Icon(Icons.history),
-              title: const Text('History'),
-              onTap: () {
-                Navigator.pop(context);
-                showBillHistoryDialog(context, controller.history);
-              },
-            ),
-            ListTile(
-              leading: ValueListenableBuilder<ThemeMode>(
-                valueListenable: themeNotifier,
-                builder: (context, mode, _) => Icon(
-                  mode == ThemeMode.dark ? Icons.dark_mode : Icons.light_mode,
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.history),
+                  title: const Text('History'),
+                  onTap: () {
+                    Navigator.pop(context);
+                    showBillHistoryDialog(context, controller.history);
+                  },
                 ),
-              ),
-              title: const Text('Dark Mode'),
-              trailing: ValueListenableBuilder<ThemeMode>(
-                valueListenable: themeNotifier,
-                builder: (context, mode, _) => Switch(
-                  value: mode == ThemeMode.dark,
-                  onChanged: (val) {
-                    final newMode = val ? ThemeMode.dark : ThemeMode.light;
+                ListTile(
+                  leading: ValueListenableBuilder<ThemeMode>(
+                    valueListenable: themeNotifier,
+                    builder: (context, mode, _) => Icon(
+                      mode == ThemeMode.dark
+                          ? Icons.dark_mode
+                          : Icons.light_mode,
+                    ),
+                  ),
+                  title: const Text('Dark Mode'),
+                  trailing: ValueListenableBuilder<ThemeMode>(
+                    valueListenable: themeNotifier,
+                    builder: (context, mode, _) => Switch(
+                      value: mode == ThemeMode.dark,
+                      onChanged: (val) {
+                        final newMode = val ? ThemeMode.dark : ThemeMode.light;
+                        themeNotifier.value = newMode;
+                        ThemePersistence.saveThemeMode(newMode);
+                      },
+                    ),
+                  ),
+                  onTap: () {
+                    final newMode = themeNotifier.value == ThemeMode.dark
+                        ? ThemeMode.light
+                        : ThemeMode.dark;
                     themeNotifier.value = newMode;
                     ThemePersistence.saveThemeMode(newMode);
                   },
                 ),
-              ),
-              onTap: () {
-                final newMode = themeNotifier.value == ThemeMode.dark
-                    ? ThemeMode.light
-                    : ThemeMode.dark;
-                themeNotifier.value = newMode;
-                ThemePersistence.saveThemeMode(newMode);
-              },
+              ],
             ),
           ],
         ),
