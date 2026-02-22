@@ -1,0 +1,12 @@
+Place the JPEG file provided by the user here with the filename `logo.jpg`.
+
+Path: assets/logo.jpg
+
+This file is referenced from `pubspec.yaml` and used in the Drawer header.
+
+To add the actual logo image, copy the JPEG you shared into this folder and name it `logo.jpg`.
+Then run:
+
+flutter pub get
+
+and rebuild the app (flutter run) to see the logo in the drawer header.
