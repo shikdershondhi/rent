@@ -1,4 +1,6 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class HomeController extends ChangeNotifier {
   final formKey = GlobalKey<FormState>();
@@ -20,6 +22,9 @@ class HomeController extends ChangeNotifier {
   final List<TextEditingController> additionalControllers = [];
   final List<TextEditingController> additionalLabelControllers = [];
   final List<String> history = [];
+  static const String _historyKey = 'rent_history_v1';
+  static const String _counterKey = 'rent_invoice_counter_v1';
+  String? lastInvoiceId;
 
   static const List<String> months = [
     'January',
@@ -38,7 +43,7 @@ class HomeController extends ChangeNotifier {
   static final List<String> years = List.generate(
       10, (index) => (DateTime.now().year - 5 + index).toString());
 
-  void calculateTotalBill() {
+  Future<void> calculateTotalBill() async {
     if (formKey.currentState?.validate() ?? false) {
       double total = double.parse(rentController.text) +
           double.parse(dueRentController.text) +
@@ -53,12 +58,12 @@ class HomeController extends ChangeNotifier {
         }
       }
       totalBill = total;
-      _addToHistory();
+      await _addToHistory();
       notifyListeners();
     }
   }
 
-  void _addToHistory() {
+  Future<void> _addToHistory() async {
     final additional = additionalControllers
         .asMap()
         .entries
@@ -82,8 +87,92 @@ class HomeController extends ChangeNotifier {
         '${additional.isNotEmpty ? '$additional\n' : ''}'
         'Notice: ${noticeController.text}\n'
         'Total Bill: $totalBill';
-    history.insert(0, summary);
-    if (history.length > 20) history.removeLast();
+    // avoid duplicates: if same summary exists, move it to top
+    final existingIndex = history.indexWhere((h) => h.contains(summary));
+    if (existingIndex != -1) {
+      final existing = history.removeAt(existingIndex);
+      history.insert(0, existing);
+      if (existing.startsWith('Invoice ID:')) {
+        lastInvoiceId =
+            existing.split('\n').first.replaceFirst('Invoice ID:', '').trim();
+      }
+      await saveHistory();
+      return;
+    }
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      int counter = prefs.getInt(_counterKey) ?? 0;
+      counter++;
+      await prefs.setInt(_counterKey, counter);
+      final invoiceId = 'RN-${counter.toString().padLeft(5, '0')}';
+      lastInvoiceId = invoiceId;
+      final full = 'Invoice ID: $invoiceId\n' + summary;
+      history.insert(0, full);
+      if (history.length > 50) history.removeLast();
+      await saveHistory();
+    } catch (_) {
+      final invoiceId =
+          'RN-${DateTime.now().millisecondsSinceEpoch}-${Random().nextInt(1000)}';
+      lastInvoiceId = invoiceId;
+      final full = 'Invoice ID: $invoiceId\n' + summary;
+      history.insert(0, full);
+      if (history.length > 50) history.removeLast();
+      await saveHistory();
+    }
+  }
+
+  Future<void> saveHistory() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setStringList(_historyKey, history);
+    } catch (_) {}
+  }
+
+  Future<void> loadHistory() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final list = prefs.getStringList(_historyKey);
+      if (list != null) {
+        history.clear();
+        history.addAll(list);
+        if (history.isNotEmpty && history.first.startsWith('Invoice ID:')) {
+          lastInvoiceId = history.first
+              .split('\n')
+              .first
+              .replaceFirst('Invoice ID:', '')
+              .trim();
+        }
+        notifyListeners();
+      }
+    } catch (_) {}
+  }
+
+  Future<void> clearSavedHistory() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(_historyKey);
+      await prefs.setInt(_counterKey, 0);
+    } catch (_) {}
+    history.clear();
+    lastInvoiceId = null;
+    notifyListeners();
+  }
+
+  Future<void> removeHistoryAt(int index) async {
+    if (index < 0 || index >= history.length) return;
+    history.removeAt(index);
+    await saveHistory();
+    if (history.isNotEmpty && history.first.startsWith('Invoice ID:')) {
+      lastInvoiceId = history.first
+          .split('\n')
+          .first
+          .replaceFirst('Invoice ID:', '')
+          .trim();
+    } else {
+      lastInvoiceId = null;
+    }
+    notifyListeners();
   }
 
   void clearData() {

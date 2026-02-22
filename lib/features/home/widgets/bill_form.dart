@@ -1,11 +1,24 @@
+import 'dart:io';
+import 'dart:ui' as ui;
+import 'package:flutter/rendering.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
+import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
+
 import '../home_controller.dart';
 
-class BillForm extends StatelessWidget {
+class BillForm extends StatefulWidget {
   const BillForm({super.key});
+
+  @override
+  State<BillForm> createState() => _BillFormState();
+}
+
+class _BillFormState extends State<BillForm> {
+  final GlobalKey repaintKey = GlobalKey();
 
   @override
   Widget build(BuildContext context) {
@@ -40,9 +53,7 @@ class BillForm extends StatelessWidget {
                 decoration: const InputDecoration(
                     labelText: 'Phone', border: OutlineInputBorder()),
                 keyboardType: TextInputType.phone,
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly,
-                ],
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your phone number';
@@ -276,7 +287,8 @@ class BillForm extends StatelessWidget {
                 alignment: WrapAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: controller.calculateTotalBill,
+                    onPressed: () async =>
+                        await controller.calculateTotalBill(),
                     child: const Text('Calculate Bill'),
                   ),
                   ElevatedButton(
@@ -310,96 +322,230 @@ class BillForm extends StatelessWidget {
                     fontWeight: FontWeight.bold,
                     color: Colors.blue)),
             content: SingleChildScrollView(
-              child: Card(
-                elevation: 5,
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text('Customer Details',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue)),
-                      const SizedBox(height: 8),
-                      Text('Name: ${controller.nameController.text}'),
-                      Text('Address: ${controller.addressController.text}'),
-                      Text('Phone: ${controller.phoneController.text}'),
-                      const SizedBox(height: 16),
-                      const Text('Invoice Details',
-                          style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.blue)),
-                      const SizedBox(height: 8),
-                      Text('Year: ${controller.selectedYear}'),
-                      Text('Month: ${controller.selectedMonth}'),
-                      Text('Rent: ${controller.rentController.text}'),
-                      Text(
-                          'Advance Rent: ${controller.advanceRentController.text}'),
-                      Text('Due Rent: ${controller.dueRentController.text}'),
-                      Text('GAS: ${controller.gasController.text}'),
-                      Text(
-                          'Electricity Bill: ${controller.electricityController.text}'),
-                      Text(
-                          'Service Charge: ${controller.serviceChargeController.text}'),
-                      Text(
-                          'Utility Bill: ${controller.utilityBillController.text}'),
-                      for (int i = 0;
-                          i < controller.additionalControllers.length;
-                          i++)
+              child: RepaintBoundary(
+                key: repaintKey,
+                child: Card(
+                  elevation: 5,
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (controller.lastInvoiceId != null)
+                          Text('Invoice ID: ${controller.lastInvoiceId}',
+                              style: const TextStyle(
+                                  fontSize: 14, fontWeight: FontWeight.bold)),
+                        const SizedBox(height: 8),
+                        const Text('Customer Details',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue)),
+                        const SizedBox(height: 8),
+                        Text('Name: ${controller.nameController.text}'),
+                        Text('Address: ${controller.addressController.text}'),
+                        Text('Phone: ${controller.phoneController.text}'),
+                        const SizedBox(height: 16),
+                        const Text('Invoice Details',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.blue)),
+                        const SizedBox(height: 8),
+                        Text('Year: ${controller.selectedYear}'),
+                        Text('Month: ${controller.selectedMonth}'),
+                        Text('Rent: ${controller.rentController.text}'),
                         Text(
-                            '${controller.additionalLabelControllers[i].text}: ${controller.additionalControllers[i].text}'),
-                      const SizedBox(height: 16),
-                      Text('Notice: ${controller.noticeController.text}',
-                          style: const TextStyle(fontStyle: FontStyle.italic)),
-                      const SizedBox(height: 16),
-                      const Divider(),
-                      const SizedBox(height: 8),
-                      Text('Total Bill: ${controller.totalBill}',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                              color: Colors.green)),
-                    ],
+                            'Advance Rent: ${controller.advanceRentController.text}'),
+                        Text('Due Rent: ${controller.dueRentController.text}'),
+                        Text('GAS: ${controller.gasController.text}'),
+                        Text(
+                            'Electricity Bill: ${controller.electricityController.text}'),
+                        Text(
+                            'Service Charge: ${controller.serviceChargeController.text}'),
+                        Text(
+                            'Utility Bill: ${controller.utilityBillController.text}'),
+                        for (int i = 0;
+                            i < controller.additionalControllers.length;
+                            i++)
+                          Text(
+                              '${controller.additionalLabelControllers[i].text}: ${controller.additionalControllers[i].text}'),
+                        const SizedBox(height: 16),
+                        Text('Notice: ${controller.noticeController.text}',
+                            style:
+                                const TextStyle(fontStyle: FontStyle.italic)),
+                        const SizedBox(height: 16),
+                        const Divider(),
+                        const SizedBox(height: 8),
+                        Text('Total Bill: ${controller.totalBill}',
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 20,
+                                color: Colors.green)),
+                      ],
+                    ),
                   ),
                 ),
               ),
             ),
             actions: [
-              TextButton(
-                onPressed: () {
-                  Clipboard.setData(
-                      ClipboardData(text: controller.history.first));
-                  ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text('Data copied to clipboard!')));
-                },
-                child: const Text('Copy'),
-              ),
-              TextButton(
-                onPressed: () async {
-                  try {
-                    await Share.share(
-                      controller.history.first,
-                      subject: 'Invoice',
-                    );
-                  } catch (e) {
-                    // ignore: use_build_context_synchronously
-                    ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('Failed to share: $e')));
-                  }
-                },
-                child: const Text('Share'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text('Close'),
+              SizedBox(
+                width: double.maxFinite,
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  alignment: WrapAlignment.end,
+                  children: [
+                    TextButton(
+                      onPressed: () {
+                        if (controller.history.isNotEmpty) {
+                          Clipboard.setData(
+                              ClipboardData(text: controller.history.first));
+                          ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Data copied to clipboard!')));
+                        }
+                      },
+                      child: const Text('Copy'),
+                    ),
+                    TextButton(
+                      onPressed: () async {
+                        if (controller.history.isNotEmpty) {
+                          try {
+                            await Share.share(controller.history.first,
+                                subject: 'Invoice');
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to share: $e')));
+                          }
+                        }
+                      },
+                      child: const Text('Share'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        try {
+                          final granted = await _requestSavePermission();
+                          if (!granted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Permission denied')));
+                            return;
+                          }
+                          final boundary = repaintKey.currentContext
+                              ?.findRenderObject() as RenderRepaintBoundary?;
+                          if (boundary == null) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Failed to capture image')));
+                            return;
+                          }
+                          final ui.Image image =
+                              await boundary.toImage(pixelRatio: 3.0);
+                          final byteData = await image.toByteData(
+                              format: ui.ImageByteFormat.png);
+                          final bytes = byteData!.buffer.asUint8List();
+                          final name =
+                              'invoice_${controller.lastInvoiceId ?? DateTime.now().millisecondsSinceEpoch}';
+                          final result = await ImageGallerySaverPlus.saveImage(
+                              bytes,
+                              name: name);
+                          var success = false;
+                          if (result is Map && result['isSuccess'] == true) {
+                            success = true;
+                          } else if (result == true) {
+                            success = true;
+                          } else if (result != null) {
+                            success = true;
+                          }
+                          if (success) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Saved to gallery')));
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                    content: Text('Failed to save image')));
+                          }
+                        } catch (e) {
+                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                              content: Text('Failed to save image: $e')));
+                        }
+                      },
+                      child: const Text('Download'),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text('Close'),
+                    ),
+                  ],
+                ),
               ),
             ],
           );
         },
       );
     }
+  }
+
+  Future<bool> _requestSavePermission() async {
+    if (Platform.isAndroid) {
+      final storageStatus = await Permission.storage.status;
+      if (storageStatus.isGranted) return true;
+      final photosStatus = await Permission.photos.status;
+      if (photosStatus.isGranted) return true;
+
+      final statuses = await [Permission.storage, Permission.photos].request();
+      final s = statuses[Permission.storage];
+      final p = statuses[Permission.photos];
+      if (s?.isGranted == true || p?.isGranted == true) return true;
+
+      if (s?.isPermanentlyDenied == true || p?.isPermanentlyDenied == true) {
+        final open = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Permission required'),
+            content: const Text(
+                'Please enable storage/photos permission in app settings to save images.'),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: const Text('Cancel')),
+              TextButton(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  child: const Text('Open Settings')),
+            ],
+          ),
+        );
+        if (open == true) {
+          await openAppSettings();
+        }
+      }
+      return false;
+    } else if (Platform.isIOS) {
+      final status = await Permission.photos.request();
+      if (status.isGranted) return true;
+      if (status.isPermanentlyDenied) {
+        final open = await showDialog<bool>(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            title: const Text('Permission required'),
+            content: const Text(
+                'Please enable photos permission in app settings to save images.'),
+            actions: [
+              TextButton(
+                  onPressed: () => Navigator.pop(ctx, false),
+                  child: const Text('Cancel')),
+              TextButton(
+                  onPressed: () => Navigator.pop(ctx, true),
+                  child: const Text('Open Settings')),
+            ],
+          ),
+        );
+        if (open == true) await openAppSettings();
+      }
+      return false;
+    }
+    return false;
   }
 }

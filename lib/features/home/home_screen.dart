@@ -20,6 +20,7 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     controller = HomeController();
+    controller.loadHistory();
   }
 
   @override
@@ -31,7 +32,38 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Rent and Bill Calculator')),
+      appBar: AppBar(
+        title: const Text('Rent and Bill Calculator'),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.delete_forever),
+            tooltip: 'Clear saved history',
+            onPressed: () async {
+              final confirm = await showDialog<bool>(
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text('Clear saved history?'),
+                  content:
+                      const Text('This will delete all saved bill history.'),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context, false),
+                        child: const Text('Cancel')),
+                    TextButton(
+                        onPressed: () => Navigator.pop(context, true),
+                        child: const Text('Clear')),
+                  ],
+                ),
+              );
+              if (confirm == true) {
+                await controller.clearSavedHistory();
+                ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(content: Text('Saved history cleared')));
+              }
+            },
+          ),
+        ],
+      ),
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -56,14 +88,6 @@ class _HomeScreenState extends State<HomeScreen> {
               leading: const Icon(Icons.settings),
               title: const Text('Settings'),
               children: [
-                ListTile(
-                  leading: const Icon(Icons.history),
-                  title: const Text('History'),
-                  onTap: () {
-                    Navigator.pop(context);
-                    showBillHistoryDialog(context, controller.history);
-                  },
-                ),
                 ListTile(
                   leading: ValueListenableBuilder<ThemeMode>(
                     valueListenable: themeNotifier,
@@ -101,6 +125,11 @@ class _HomeScreenState extends State<HomeScreen> {
       body: ChangeNotifierProvider<HomeController>(
         create: (_) => controller,
         child: const BillForm(),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => showBillHistoryDialog(context, controller),
+        child: const Icon(Icons.history),
+        tooltip: 'History',
       ),
     );
   }
