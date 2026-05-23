@@ -52,13 +52,13 @@ class CoachingController extends ChangeNotifier {
 
   Future<void> calculateTotalBill() async {
     if (formKey.currentState?.validate() ?? false) {
-      double total = double.parse(amountController.text) +
-          double.parse(dueController.text);
+      double total = (double.tryParse(amountController.text) ?? 0) +
+          (double.tryParse(dueController.text) ?? 0);
       // subtract advance fee if provided
-      total -= double.parse(advanceController.text);
+      total -= (double.tryParse(advanceController.text) ?? 0);
       for (var controller in additionalControllers) {
         if (controller.text.isNotEmpty) {
-          total += double.parse(controller.text);
+          total += (double.tryParse(controller.text) ?? 0);
         }
       }
       totalBill = total;
@@ -146,6 +146,7 @@ class CoachingController extends ChangeNotifier {
     selectedYear = DateTime.now().year.toString();
     selectedDate = null;
     dateController.text = '';
+    clearDraft();
     notifyListeners();
   }
 
@@ -183,8 +184,8 @@ class CoachingController extends ChangeNotifier {
               .replaceFirst('Invoice ID:', '')
               .trim();
         }
-        notifyListeners();
       }
+      await loadDraft();
     } catch (_) {}
   }
 
@@ -213,5 +214,97 @@ class CoachingController extends ChangeNotifier {
       lastInvoiceId = null;
     }
     notifyListeners();
+  }
+
+  static const String _draftKey = 'coaching_draft_v1';
+
+  Future<void> saveDraft() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('${_draftKey}_name', nameController.text);
+      await prefs.setString('${_draftKey}_class', classController.text);
+      await prefs.setString('${_draftKey}_batch', batchController.text);
+      await prefs.setString('${_draftKey}_session', sessionController.text);
+      await prefs.setString('${_draftKey}_amount', amountController.text);
+      await prefs.setString('${_draftKey}_advance', advanceController.text);
+      await prefs.setString('${_draftKey}_due', dueController.text);
+      await prefs.setString('${_draftKey}_notice', noticeController.text);
+      await prefs.setString('${_draftKey}_month', selectedMonth);
+      await prefs.setString('${_draftKey}_year', selectedYear);
+      if (selectedDate != null) {
+        await prefs.setString('${_draftKey}_date', selectedDate!.toIso8601String());
+      } else {
+        await prefs.remove('${_draftKey}_date');
+      }
+
+      // Save dynamic fields count and values
+      await prefs.setInt('${_draftKey}_additional_count', additionalControllers.length);
+      for (int i = 0; i < additionalControllers.length; i++) {
+        await prefs.setString('${_draftKey}_additional_label_$i', additionalLabelControllers[i].text);
+        await prefs.setString('${_draftKey}_additional_value_$i', additionalControllers[i].text);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> loadDraft() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.containsKey('${_draftKey}_name') || prefs.containsKey('${_draftKey}_amount')) {
+        nameController.text = prefs.getString('${_draftKey}_name') ?? '';
+        classController.text = prefs.getString('${_draftKey}_class') ?? '';
+        batchController.text = prefs.getString('${_draftKey}_batch') ?? '';
+        sessionController.text = prefs.getString('${_draftKey}_session') ?? '';
+        amountController.text = prefs.getString('${_draftKey}_amount') ?? '0';
+        advanceController.text = prefs.getString('${_draftKey}_advance') ?? '0';
+        dueController.text = prefs.getString('${_draftKey}_due') ?? '0';
+        noticeController.text = prefs.getString('${_draftKey}_notice') ?? '';
+        selectedMonth = prefs.getString('${_draftKey}_month') ?? months[DateTime.now().month - 1];
+        selectedYear = prefs.getString('${_draftKey}_year') ?? DateTime.now().year.toString();
+        final dateString = prefs.getString('${_draftKey}_date');
+        if (dateString != null) {
+          selectedDate = DateTime.tryParse(dateString);
+          if (selectedDate != null) {
+            dateController.text = selectedDate!.toLocal().toIso8601String().split('T').first;
+          }
+        }
+
+        // Restore dynamic fields
+        final count = prefs.getInt('${_draftKey}_additional_count') ?? 0;
+        additionalControllers.clear();
+        additionalLabelControllers.clear();
+        for (int i = 0; i < count; i++) {
+          final label = prefs.getString('${_draftKey}_additional_label_$i') ?? '';
+          final value = prefs.getString('${_draftKey}_additional_value_$i') ?? '';
+          additionalControllers.add(TextEditingController(text: value));
+          additionalLabelControllers.add(TextEditingController(text: label));
+        }
+
+        notifyListeners();
+      }
+    } catch (_) {}
+  }
+
+  Future<void> clearDraft() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('${_draftKey}_name');
+      await prefs.remove('${_draftKey}_class');
+      await prefs.remove('${_draftKey}_batch');
+      await prefs.remove('${_draftKey}_session');
+      await prefs.remove('${_draftKey}_amount');
+      await prefs.remove('${_draftKey}_advance');
+      await prefs.remove('${_draftKey}_due');
+      await prefs.remove('${_draftKey}_notice');
+      await prefs.remove('${_draftKey}_month');
+      await prefs.remove('${_draftKey}_year');
+      await prefs.remove('${_draftKey}_date');
+
+      final count = prefs.getInt('${_draftKey}_additional_count') ?? 0;
+      await prefs.remove('${_draftKey}_additional_count');
+      for (int i = 0; i < count; i++) {
+        await prefs.remove('${_draftKey}_additional_label_$i');
+        await prefs.remove('${_draftKey}_additional_value_$i');
+      }
+    } catch (_) {}
   }
 }
