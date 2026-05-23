@@ -45,16 +45,16 @@ class HomeController extends ChangeNotifier {
 
   Future<void> calculateTotalBill() async {
     if (formKey.currentState?.validate() ?? false) {
-      double total = double.parse(rentController.text) +
-          double.parse(dueRentController.text) +
-          double.parse(gasController.text) +
-          double.parse(electricityController.text) +
-          double.parse(serviceChargeController.text) +
-          double.parse(utilityBillController.text);
-      total -= double.parse(advanceRentController.text);
+      double total = (double.tryParse(rentController.text) ?? 0) +
+          (double.tryParse(dueRentController.text) ?? 0) +
+          (double.tryParse(gasController.text) ?? 0) +
+          (double.tryParse(electricityController.text) ?? 0) +
+          (double.tryParse(serviceChargeController.text) ?? 0) +
+          (double.tryParse(utilityBillController.text) ?? 0);
+      total -= (double.tryParse(advanceRentController.text) ?? 0);
       for (var controller in additionalControllers) {
         if (controller.text.isNotEmpty) {
-          total += double.parse(controller.text);
+          total += (double.tryParse(controller.text) ?? 0);
         }
       }
       totalBill = total;
@@ -143,8 +143,8 @@ class HomeController extends ChangeNotifier {
               .replaceFirst('Invoice ID:', '')
               .trim();
         }
-        notifyListeners();
       }
+      await loadDraft();
     } catch (_) {}
   }
 
@@ -196,6 +196,7 @@ class HomeController extends ChangeNotifier {
     totalBill = 0.0;
     selectedMonth = months[DateTime.now().month - 1];
     selectedYear = DateTime.now().year.toString();
+    clearDraft();
     notifyListeners();
   }
 
@@ -209,5 +210,92 @@ class HomeController extends ChangeNotifier {
     additionalControllers.removeAt(index);
     additionalLabelControllers.removeAt(index);
     notifyListeners();
+  }
+  static const String _draftKey = 'rent_draft_v1';
+
+  Future<void> saveDraft() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('${_draftKey}_name', nameController.text);
+      await prefs.setString('${_draftKey}_address', addressController.text);
+      await prefs.setString('${_draftKey}_phone', phoneController.text);
+      await prefs.setString('${_draftKey}_rent', rentController.text);
+      await prefs.setString('${_draftKey}_advance', advanceRentController.text);
+      await prefs.setString('${_draftKey}_due', dueRentController.text);
+      await prefs.setString('${_draftKey}_gas', gasController.text);
+      await prefs.setString('${_draftKey}_electricity', electricityController.text);
+      await prefs.setString('${_draftKey}_serviceCharge', serviceChargeController.text);
+      await prefs.setString('${_draftKey}_utility', utilityBillController.text);
+      await prefs.setString('${_draftKey}_notice', noticeController.text);
+      await prefs.setString('${_draftKey}_month', selectedMonth);
+      await prefs.setString('${_draftKey}_year', selectedYear);
+
+      // Save dynamic fields count and values
+      await prefs.setInt('${_draftKey}_additional_count', additionalControllers.length);
+      for (int i = 0; i < additionalControllers.length; i++) {
+        await prefs.setString('${_draftKey}_additional_label_$i', additionalLabelControllers[i].text);
+        await prefs.setString('${_draftKey}_additional_value_$i', additionalControllers[i].text);
+      }
+    } catch (_) {}
+  }
+
+  Future<void> loadDraft() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      if (prefs.containsKey('${_draftKey}_name') || prefs.containsKey('${_draftKey}_rent')) {
+        nameController.text = prefs.getString('${_draftKey}_name') ?? '';
+        addressController.text = prefs.getString('${_draftKey}_address') ?? '';
+        phoneController.text = prefs.getString('${_draftKey}_phone') ?? '';
+        rentController.text = prefs.getString('${_draftKey}_rent') ?? '0';
+        advanceRentController.text = prefs.getString('${_draftKey}_advance') ?? '0';
+        dueRentController.text = prefs.getString('${_draftKey}_due') ?? '0';
+        gasController.text = prefs.getString('${_draftKey}_gas') ?? '0';
+        electricityController.text = prefs.getString('${_draftKey}_electricity') ?? '0';
+        serviceChargeController.text = prefs.getString('${_draftKey}_serviceCharge') ?? '0';
+        utilityBillController.text = prefs.getString('${_draftKey}_utility') ?? '0';
+        noticeController.text = prefs.getString('${_draftKey}_notice') ?? '';
+        selectedMonth = prefs.getString('${_draftKey}_month') ?? months[DateTime.now().month - 1];
+        selectedYear = prefs.getString('${_draftKey}_year') ?? DateTime.now().year.toString();
+
+        // Restore dynamic fields
+        final count = prefs.getInt('${_draftKey}_additional_count') ?? 0;
+        additionalControllers.clear();
+        additionalLabelControllers.clear();
+        for (int i = 0; i < count; i++) {
+          final label = prefs.getString('${_draftKey}_additional_label_$i') ?? '';
+          final value = prefs.getString('${_draftKey}_additional_value_$i') ?? '';
+          additionalControllers.add(TextEditingController(text: value));
+          additionalLabelControllers.add(TextEditingController(text: label));
+        }
+
+        notifyListeners();
+      }
+    } catch (_) {}
+  }
+
+  Future<void> clearDraft() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove('${_draftKey}_name');
+      await prefs.remove('${_draftKey}_address');
+      await prefs.remove('${_draftKey}_phone');
+      await prefs.remove('${_draftKey}_rent');
+      await prefs.remove('${_draftKey}_advance');
+      await prefs.remove('${_draftKey}_due');
+      await prefs.remove('${_draftKey}_gas');
+      await prefs.remove('${_draftKey}_electricity');
+      await prefs.remove('${_draftKey}_serviceCharge');
+      await prefs.remove('${_draftKey}_utility');
+      await prefs.remove('${_draftKey}_notice');
+      await prefs.remove('${_draftKey}_month');
+      await prefs.remove('${_draftKey}_year');
+
+      final count = prefs.getInt('${_draftKey}_additional_count') ?? 0;
+      await prefs.remove('${_draftKey}_additional_count');
+      for (int i = 0; i < count; i++) {
+        await prefs.remove('${_draftKey}_additional_label_$i');
+        await prefs.remove('${_draftKey}_additional_value_$i');
+      }
+    } catch (_) {}
   }
 }
