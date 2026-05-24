@@ -1,81 +1,60 @@
-```markdown
-# rent Development Patterns
+---
+name: rent
+description: Use when working in the rent Flutter app, especially for rent and bill calculation features, Dart or Flutter UI changes, tests, theme persistence, assets, Android or iOS build configuration, and repository workflow decisions.
+---
 
-> Auto-generated skill from repository analysis
+# rent Flutter Development Patterns
 
-## Overview
-This skill teaches the core development patterns and conventions used in the `rent` TypeScript codebase. It covers file organization, import/export styles, commit message conventions, and testing patterns. By following these guidelines, contributors can ensure consistency and maintainability across the project.
+Use this skill when changing or reviewing code in the `rent` repository. This is a Flutter app for rent and bill calculation.
 
-## Coding Conventions
+## Project Layout
 
-### File Naming
-- Use **snake_case** for all file names.
-  - Example: `user_service.ts`, `rental_manager.test.ts`
+- Application code lives in `lib/`.
+- `lib/main.dart` starts the app.
+- `lib/app.dart` wires app-level setup.
+- Shared theme logic belongs in `lib/core/`.
+- Feature code belongs in `lib/features/<feature>/`.
+- Current feature folders include `home/`, `coaching/`, and `dashboard/`.
+- Reusable feature widgets should live under the matching feature's `widgets/` folder.
+- Tests live in `test/`, including widget tests like `test/widget_test.dart`.
+- Image assets live in `assets/` and must be declared in `pubspec.yaml`.
+- Platform-specific code and build configuration live under `android/` and `ios/`.
 
-### Import Style
-- Use **relative imports** for referencing modules within the project.
-  - Example:
-    ```typescript
-    import { calculate_rent } from './rent_utils';
-    ```
+## Development Commands
 
-### Export Style
-- Use **named exports** for all modules.
-  - Example:
-    ```typescript
-    // rent_utils.ts
-    export function calculate_rent(params: RentParams): number { ... }
-    ```
+- Run `flutter pub get` after dependency changes.
+- Run `flutter run` to launch the app on a selected simulator, emulator, or device.
+- Run `flutter test` for the test suite.
+- Run `flutter analyze` for analyzer checks.
+- Run `dart format lib test` after Dart edits.
+- Run `flutter build apk --release` to create a release Android APK.
 
-### Commit Messages
-- Follow **Conventional Commits** with the `feat` prefix for new features.
-  - Example:
-    ```
-    feat: add rental calculation logic for monthly leases
-    ```
+## Coding Style
 
-## Workflows
+- Use standard Dart formatting with 2-space indentation.
+- Use trailing commas where they improve Flutter widget readability.
+- Keep filenames in `snake_case.dart`.
+- Use `PascalCase` for classes and widgets.
+- Use `lowerCamelCase` for variables, methods, and controllers.
+- Prefer small widgets and controllers over large screen files as behavior grows.
+- Keep feature-specific code inside the matching `lib/features/<feature>/` folder.
 
-### Feature Development
-**Trigger:** When implementing a new feature  
-**Command:** `/feature-development`
+## Testing Expectations
 
-1. Create a new branch for your feature.
-2. Use snake_case for any new files.
-3. Use relative imports and named exports in your code.
-4. Write or update tests in corresponding `*.test.*` files.
-5. Commit changes using the `feat` prefix and a descriptive message.
-6. Open a pull request for review.
+- Use `flutter_test` for widget and unit coverage.
+- Name test files with the `_test.dart` suffix.
+- Mock persistent app state, such as `SharedPreferences`, before pumping widgets when needed.
+- Add or update tests when changing calculation behavior, validation, navigation, or theme persistence.
+- Run `flutter test` before opening a pull request.
 
-### Testing
-**Trigger:** When verifying code functionality  
-**Command:** `/run-tests`
+## Repository Workflow
 
-1. Identify or create test files matching the `*.test.*` pattern.
-2. Run the test suite using the project's test runner (framework not specified).
-3. Review test results and fix any failing tests.
-4. Ensure all new features are covered by tests.
+- Use short Conventional Commit-style messages such as `feat:`, `fix:`, `test:`, `docs:`, or `refactor:`.
+- Keep each commit focused on one logical change.
+- Pull requests should include a concise summary, testing performed, linked issue or task when available, and screenshots or screen recordings for visible UI changes.
 
-## Testing Patterns
+## Security And Configuration
 
-- Test files follow the pattern: `*.test.*` (e.g., `rental_manager.test.ts`).
-- The specific testing framework is not detected; check project documentation or package.json for details.
-- Place tests alongside or near the modules they test.
-- Example test file structure:
-  ```typescript
-  // rental_manager.test.ts
-  import { calculate_rent } from './rent_utils';
-
-  describe('calculate_rent', () => {
-    it('should return correct rent for standard lease', () => {
-      expect(calculate_rent({ ... })).toBe(1200);
-    });
-  });
-  ```
-
-## Commands
-| Command             | Purpose                                         |
-|---------------------|-------------------------------------------------|
-| /feature-development| Guide for adding a new feature                  |
-| /run-tests          | Steps to execute and verify the test suite      |
-```
+- Do not commit generated build output, local IDE state, signing keys, or device-specific secrets.
+- Keep assets registered in `pubspec.yaml`.
+- Verify Android and iOS permission changes on a real device when adding platform capabilities.
