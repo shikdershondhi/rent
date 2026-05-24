@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta
+      name="description"
+      content="Rent &amp; Fee Calculator helps manage rent bills, utilities, coaching fees, invoice archives, sharing, and dark mode from one Flutter app."
+    >
+    <title>Rent &amp; Fee Calculator</title>
+    <link rel="icon" href="assets/app_logo.png">
+    <link rel="stylesheet" href="styles.css">
+  </head>
+  <body>
+    <header class="site-header" data-reveal>
+      <a class="brand" href="#top" aria-label="Rent &amp; Fee Calculator home">
+        <img src="assets/app_logo.png" alt="" width="40" height="40">
+        <span>Rent &amp; Fee Calculator</span>
+      </a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#features">Features</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#download">Download</a>
+      </nav>
+    </header>
+
+    <main id="top">
+      <section class="hero section-shell">
+        <div class="hero-copy" data-reveal>
+          <p class="eyebrow">Rent bills, utility charges, and coaching fees</p>
+          <h1>One app for clear monthly invoices.</h1>
+          <p class="hero-text">
+            Calculate rent, track dues, create coaching fee invoices, keep an archive, and share clean bill details without spreadsheet work.
+          </p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="https://github.com/shikdershondhi/rent/releases/latest">
+              Download App
+            </a>
+            <a class="button button-secondary" href="#features">Explore Features</a>
+          </div>
+          <dl class="hero-metrics" aria-label="App highlights">
+            <div>
+              <dt>2</dt>
+              <dd>billing modules</dd>
+            </div>
+            <div>
+              <dt>50</dt>
+              <dd>saved invoices per archive</dd>
+            </div>
+            <div>
+              <dt>৳</dt>
+              <dd>live total preview</dd>
+            </div>
+          </dl>
+        </div>
+
+        <div class="phone-stage" aria-label="App interface preview" data-reveal>
+          <div class="phone">
+            <div class="phone-top">
+              <span></span>
+              <strong>Rent Calculator</strong>
+              <span></span>
+            </div>
+            <div class="phone-card customer-card">
+              <div>
+                <small>Customer Details</small>
+                <strong>Shikder House</strong>
+              </div>
+              <span>May 2026</span>
+            </div>
+            <div class="phone-grid">
+              <div>
+                <small>Rent</small>
+                <strong>18,000 ৳</strong>
+              </div>
+              <div>
+                <small>Utility</small>
+                <strong>3,250 ৳</strong>
+              </div>
+              <div>
+                <small>Advance</small>
+                <strong>-2,000 ৳</strong>
+              </div>
+              <div>
+                <small>Due</small>
+                <strong>1,500 ৳</strong>
+              </div>
+            </div>
+            <div class="invoice-strip">
+              <span>RN-00042</span>
+              <strong>20,750 ৳</strong>
+            </div>
+            <div class="phone-actions">
+              <span>Copy</span>
+              <span>Share</span>
+              <span>Save Image</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="section-shell feature-band" id="features">
+        <div class="section-heading" data-reveal>
+          <p class="eyebrow">Built around real monthly work</p>
+          <h2>Everything the app handles today.</h2>
+        </div>
+        <div class="feature-grid">
+          <article class="feature-card" data-reveal>
+            <span class="feature-icon">01</span>
+            <h3>Rent & Utility Calculator</h3>
+            <p>Capture rent, advance paid, due rent, gas, electricity, service charge, utility bills, and custom fields in one clean form.</p>
+          </article>
+          <article class="feature-card" data-reveal>
+            <span class="feature-icon">02</span>
+            <h3>Coaching Fee Calculator</h3>
+            <p>Record student name, class, batch, session, payment date, monthly fee, advance fee, due amount, and extra items.</p>
+          </article>
+          <article class="feature-card" data-reveal>
+            <span class="feature-icon">03</span>
+            <h3>Live Running Totals</h3>
+            <p>See the total update as values change, so mistakes are easier to catch before saving the invoice.</p>
+          </article>
+          <article class="feature-card" data-reveal>
+            <span class="feature-icon">04</span>
+            <h3>Invoice Archive</h3>
+            <p>Keep rent and coaching records in separate archives with invoice IDs, month and year labels, totals, copy, share, and delete actions.</p>
+          </article>
+          <article class="feature-card" data-reveal>
+            <span class="feature-icon">05</span>
+            <h3>Shareable Invoice Output</h3>
+            <p>Preview invoice details, copy text, share through installed apps, and save invoice images when needed.</p>
+          </article>
+          <article class="feature-card" data-reveal>
+            <span class="feature-icon">06</span>
+            <h3>Persistent Preferences</h3>
+            <p>Drafts, dark mode, enabled modules, history, and invoice counters stay available after closing and reopening the app.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="workflow section-shell" id="workflow">
+        <div class="section-heading" data-reveal>
+          <p class="eyebrow">Simple daily flow</p>
+          <h2>From amount entry to shareable invoice.</h2>
+        </div>
+        <div class="steps">
+          <article data-reveal>
+            <span>1</span>
+            <h3>Choose a module</h3>
+            <p>Use rent billing for tenants or coaching billing for students. Feature toggles keep unused modules out of the dashboard.</p>
+          </article>
+          <article data-reveal>
+            <span>2</span>
+            <h3>Enter the breakdown</h3>
+            <p>Add base charges, dues, advances, utility values, notices, and custom items. Numeric validation keeps totals clean.</p>
+          </article>
+          <article data-reveal>
+            <span>3</span>
+            <h3>Save and share</h3>
+            <p>Generate an invoice ID, archive the record, then copy, share, or save the invoice for later communication.</p>
+          </article>
+        </div>
+      </section>
+
+      <section class="release-panel section-shell" id="download" data-reveal>
+        <div>
+          <p class="eyebrow">Latest release</p>
+          <h2>Download the newest app build from GitHub.</h2>
+          <p>
+            The button opens the latest release page, so it keeps working even when the release asset name changes.
+          </p>
+        </div>
+        <a class="button button-primary" href="https://github.com/shikdershondhi/rent/releases/latest">
+          Download App
+        </a>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <span>Rent &amp; Fee Calculator · Created by Shikder Shondhi</span>
+      <a href="https://github.com/shikdershondhi/rent">GitHub Repository</a>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+</html>
